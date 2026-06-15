@@ -1,1 +1,67 @@
-# Habit-Life-RPG
+# Habit Life RPG
+
+《左手藍圖，右手魔法：用文件驅動 AI 開發》的隨書範例專案。
+
+這個 repository 不是一次放上最終成品，而是會依照書中的章節逐步長出來。讀者可以透過 Git tag 或 GitHub Releases，切回每一章完成時的狀態，跟著書本從工具箱、藍圖、後端、測試、前端一路走到部署與維運。
+
+## 目前進度
+
+| 階段 | Tag | 狀態 | 內容 |
+| :--- | :--- | :--- | :--- |
+| 第 2 章：工具箱 | `ch02-toolbox` | 已完成 | Repo 基礎、資安規則、章節導覽、圖片資產清單 |
+| 第 3 章：藍圖繪製 | `ch03-blueprint` | 尚未開始 | PRD、User Stories、UX Flow、UI Spec |
+| 第 4 章：地基工程 | `ch04-architecture` | 尚未開始 | 架構圖、資料庫規格、OpenAPI 契約 |
+| 第 5 章：後端開發 | `ch05-backend-sqlite` | 尚未開始 | FastAPI + SQLite 本機後端 |
+| 第 6 章：品質保證 | `ch06-quality-pytest` | 尚未開始 | Pytest 與 TDD 測試防線 |
+| 第 7 章：前端開發 | `ch07-frontend-local` | 尚未開始 | React + Vite 本機前端整合 |
+| 第 8 章：雲端部署 | `ch08-cloud-templates` | 尚未開始 | Azure SQL / App Service / SWA 範本與部署文件 |
+| 第 9 章：維運合規 | `ch09-ops` | 尚未開始 | Runbook、監控、告警、隱私權政策 |
+| 第 10 章：Agent 視野 | `ch10-agent-ready` | 尚未開始 | Agent 工作流與下一個專案 checklist |
+
+## 讀者如何使用
+
+查看所有章節標籤：
+
+```bash
+git tag --list
+```
+
+切到某個章節完成時的狀態：
+
+```bash
+git checkout ch02-toolbox
+```
+
+回到最新進度：
+
+```bash
+git checkout main
+git pull
+```
+
+## 第 2 章起手式
+
+第 2 章只建立安全的開發現場，不提前寫後端或前端功能。
+
+你應該先確認：
+
+- `.gitignore` 已排除 `.env`、虛擬環境、`node_modules` 與建置產物。
+- `.env.example` 只放變數名稱與假值，不放任何真實秘密。
+- `AGENTS.md` 已記錄本專案的 AI 協作規則。
+- `docs/chapter-guides/ch02-toolbox.md` 說明本章完成條件。
+- `docs/book-assets/assets-register.md` 追蹤書中圖片素材。
+
+## 主線契約
+
+- 專案名稱：`Habit Life RPG`
+- 書中 DDD：Document-Driven Development，不是 Domain-Driven Design
+- 核心 API：`POST /api/v1/habits/{habit_id}/checkin`
+- 系統命名：進入資料表、API、測試與程式碼後，一律使用 `habit` / `habits` / `habit_id`
+- MVP 資料模型：`Users` 與 `Habits`
+- 同日不可重複打卡：MVP 先以 `Habits.LastCheckIn` 示範
+
+## 安全提醒
+
+不要把真實密碼、API Key、JWT secret、Azure 連線字串或任何付款資訊提交到 repository。
+
+如果不確定某個值能不能提交，請先放進 `.env`，並只把變數名稱同步到 `.env.example`。
