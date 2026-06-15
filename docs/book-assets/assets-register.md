@@ -43,7 +43,7 @@
 | 圖 3-3-1 | ChatGPT 產生 Mermaid UX Flow | 截圖 | `docs/book-assets/ch03-blueprint/` | planned | 示範如何請 ChatGPT 把文字流程轉成 Mermaid 程式碼 |
 | 圖 3-3-2 | 在 VS Code 預覽 UX Flow | 截圖 | `docs/book-assets/ch03-blueprint/` | planned | 確認 `docs/ux-flow.md` 的 Mermaid 能在 Markdown Preview 中顯示流程圖 |
 | 圖 3-4-1 | Habit Life RPG 介面概念圖 | AI 概念圖 / 截圖 | `docs/book-assets/ch03-blueprint/` | planned | 用 UI Spec 轉成可討論的 Cyberpunk RPG 介面方向 |
-| 圖 3-4-2 | 第一版 RPG 風格靜態切版預覽 | 截圖 | `docs/book-assets/ch03-blueprint/figure-3-4-2-*.png` | drafted | 展示 `prototype/static/index.html` 的 Hero Status、Quest Log、Reward 與底部導覽 |
+| 圖 3-4-2 | 第一版復古像素 RPG 靜態切版預覽 | 截圖 | `docs/book-assets/ch03-blueprint/figure-3-4-2-*.png` | drafted | 展示 `prototype/static/index.html` 的 Hero Status、任務捲軸式 Quest Log、Reward 與底部導覽 |
 
 ## 核對方式
 

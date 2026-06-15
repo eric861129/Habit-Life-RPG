@@ -13,7 +13,7 @@ Git tag：`ch03-blueprint`
 - `docs/PRD.md`：產品需求文件，定義 MVP 範圍、產品規則與技術路線。
 - `docs/user-stories.md`：使用者故事與驗收標準，鎖定打卡主循環。
 - `docs/ux-flow.md`：Mermaid UX Flow，視覺化登入、打卡、成功、失敗與升級分支。
-- `docs/ui-spec.md`：RPG 風格 UI Spec，定義 Hero Status、Quest Log、Reward 與底部導覽。
+- `docs/ui-spec.md`：復古像素 RPG 風格 UI Spec，定義 Hero Status、任務捲軸式 Quest Log、Reward 與底部導覽。
 - `prototype/static/index.html`：純 HTML/CSS 靜態原型，不接 API、不使用 JavaScript。
 - `docs/book-assets/ch03-blueprint/`：可評估放入書稿的第三章截圖。
 
@@ -77,13 +77,13 @@ POST /api/v1/habits/{habit_id}/checkin
 - 升級狀態如何回到首頁。
 - 錯誤狀態不應更新成功 UI。
 
-### 3.4 RPG UI Spec 與靜態原型
+### 3.4 復古像素 RPG UI Spec 與靜態原型
 
 `docs/ui-spec.md` 與 `prototype/static/index.html` 讓讀者先看到產品雛形。
 
 這裡要注意一個重要邊界：
 
-- UI 可以把 habit 包裝成 `Quest`，讓畫面更有 RPG 感。
+- UI 可以把 habit 包裝成 `Quest`，並讓每個 habit item 像任務捲軸，讓畫面更有復古 RPG 感。
 - 但 API、資料表、測試與程式碼仍然使用 `habit` / `habits` / `habit_id`。
 - 第三章不做 Phaser、Three.js、canvas playfield 或遊戲引擎。
 - 第三章只示範遊戲化 UI，不提前做正式 React 前端。

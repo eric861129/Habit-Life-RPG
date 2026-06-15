@@ -10,17 +10,20 @@
     />
     <style>
       :root {
-        --color-primary: #2d3436;
-        --color-accent: #00cec9;
-        --color-surface: #1e272e;
-        --color-surface-muted: #27343a;
-        --color-text: #f5f7fa;
-        --color-muted: #aeb8be;
-        --color-gold: #fdcb6e;
-        --color-danger: #ff7675;
-        --color-magic: #8f7cff;
-        --color-ink: #121a1f;
-        --shadow-strong: 0 24px 80px rgba(0, 0, 0, 0.36);
+        --color-primary: #171923;
+        --color-accent: #7fb069;
+        --color-surface: #262a35;
+        --color-surface-muted: #34343f;
+        --color-text: #f3e6c8;
+        --color-muted: #b8aa88;
+        --color-gold: #d6a84f;
+        --color-danger: #b85c50;
+        --color-border: #6f6047;
+        --color-scroll: #c9a86a;
+        --color-scroll-light: #e7cf93;
+        --color-scroll-dark: #8e6738;
+        --color-ink: #10131a;
+        --shadow-strong: 8px 8px 0 rgba(0, 0, 0, 0.42);
       }
 
       * {
@@ -36,13 +39,11 @@
         min-height: 100vh;
         margin: 0;
         color: var(--color-text);
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background:
-          linear-gradient(135deg, rgba(0, 206, 201, 0.13), transparent 30%),
-          linear-gradient(315deg, rgba(253, 203, 110, 0.11), transparent 32%),
-          repeating-linear-gradient(90deg, rgba(245, 247, 250, 0.035) 0 1px, transparent 1px 34px),
-          repeating-linear-gradient(0deg, rgba(245, 247, 250, 0.028) 0 1px, transparent 1px 34px),
-          var(--color-primary);
+        font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Noto Sans TC", monospace;
+        background-color: var(--color-primary);
+        background-image:
+          repeating-linear-gradient(0deg, transparent 0 31px, rgba(111, 96, 71, 0.18) 32px),
+          repeating-linear-gradient(90deg, transparent 0 31px, rgba(111, 96, 71, 0.15) 32px);
       }
 
       button {
@@ -63,18 +64,16 @@
         display: grid;
         grid-template-rows: auto 1fr auto;
         overflow: hidden;
-        border: 1px solid rgba(0, 206, 201, 0.22);
-        border-radius: 8px;
-        background:
-          linear-gradient(180deg, rgba(30, 39, 46, 0.96), rgba(18, 26, 31, 0.98)),
-          var(--color-surface);
+        border: 3px solid var(--color-border);
+        border-radius: 0;
+        background: #20242e;
         box-shadow: var(--shadow-strong);
       }
 
       .app-header {
         padding: 24px 20px 16px;
-        border-bottom: 1px solid rgba(245, 247, 250, 0.08);
-        background: linear-gradient(180deg, rgba(0, 206, 201, 0.08), transparent);
+        border-bottom: 3px solid var(--color-border);
+        background: #20242e;
       }
 
       .header-row,
@@ -119,14 +118,15 @@
 
       .badge {
         flex: 0 0 auto;
-        border: 1px solid rgba(253, 203, 110, 0.52);
-        border-radius: 8px;
+        border: 2px solid var(--color-gold);
+        border-radius: 0;
         padding: 6px 8px;
         color: var(--color-gold);
         font-size: 12px;
         font-weight: 800;
         line-height: 1;
         text-transform: uppercase;
+        box-shadow: 3px 3px 0 var(--color-ink);
       }
 
       .content {
@@ -139,11 +139,11 @@
       .hero-card,
       .level-panel,
       .habit-card {
-        border: 1px solid rgba(245, 247, 250, 0.1);
-        border-radius: 8px;
+        border: 2px solid var(--color-border);
+        border-radius: 0;
         background: var(--color-surface);
         position: relative;
-        box-shadow: inset 0 0 0 1px rgba(0, 206, 201, 0.04);
+        box-shadow: 4px 4px 0 var(--color-ink);
       }
 
       .hero-card::before,
@@ -155,8 +155,8 @@
         left: 8px;
         width: 18px;
         height: 18px;
-        border-top: 2px solid rgba(253, 203, 110, 0.58);
-        border-left: 2px solid rgba(253, 203, 110, 0.58);
+        border-top: 3px solid var(--color-gold);
+        border-left: 3px solid var(--color-gold);
         pointer-events: none;
       }
 
@@ -164,27 +164,20 @@
         display: grid;
         gap: 16px;
         padding: 16px;
-        background:
-          linear-gradient(145deg, rgba(0, 206, 201, 0.1), transparent 42%),
-          linear-gradient(315deg, rgba(143, 124, 255, 0.12), transparent 44%),
-          var(--color-surface);
+        background: var(--color-surface);
       }
 
       .avatar {
-        width: 52px;
-        height: 52px;
+        width: 56px;
+        height: 56px;
         display: grid;
         place-items: center;
-        border: 1px solid rgba(0, 206, 201, 0.48);
-        border-radius: 8px;
-        background: rgba(0, 206, 201, 0.12);
+        border: 3px solid var(--color-accent);
+        border-radius: 0;
+        background: #1a2c25;
         color: var(--color-accent);
         font-weight: 800;
-        transform: rotate(45deg);
-      }
-
-      .avatar span {
-        transform: rotate(-45deg);
+        box-shadow: 4px 4px 0 var(--color-ink);
       }
 
       .hero-main {
@@ -216,10 +209,10 @@
 
       .rank-chip {
         min-width: 0;
-        border: 1px solid rgba(245, 247, 250, 0.08);
-        border-radius: 8px;
+        border: 2px solid #4b4639;
+        border-radius: 0;
         padding: 8px;
-        background: rgba(18, 26, 31, 0.54);
+        background: var(--color-ink);
       }
 
       .rank-chip span {
@@ -245,7 +238,8 @@
         display: grid;
         gap: 4px;
         min-width: 0;
-        border-radius: 8px;
+        border: 2px solid #4b4639;
+        border-radius: 0;
         padding: 10px;
         background: var(--color-surface-muted);
       }
@@ -262,28 +256,28 @@
       }
 
       .progress {
-        height: 8px;
+        height: 12px;
         overflow: hidden;
-        border-radius: 999px;
-        background: rgba(245, 247, 250, 0.12);
+        border: 2px solid #4b4639;
+        border-radius: 0;
+        padding: 2px;
+        background: var(--color-ink);
       }
 
       .progress > span {
         display: block;
         width: 30%;
         height: 100%;
-        border-radius: inherit;
-        background: linear-gradient(90deg, var(--color-accent), var(--color-gold));
+        border-radius: 0;
+        background: repeating-linear-gradient(90deg, var(--color-accent) 0 10px, #638f54 10px 12px);
       }
 
       .level-panel {
         display: grid;
         gap: 12px;
         padding: 14px 16px;
-        border-color: rgba(253, 203, 110, 0.28);
-        background:
-          linear-gradient(135deg, rgba(253, 203, 110, 0.14), rgba(0, 206, 201, 0.12)),
-          var(--color-surface);
+        border-color: var(--color-gold);
+        background: #2f3028;
       }
 
       .panel-top {
@@ -321,14 +315,28 @@
       .habit-card {
         display: grid;
         gap: 14px;
-        padding: 14px;
+        padding: 16px 18px 16px 22px;
+        border-color: var(--color-scroll-dark);
         background:
-          linear-gradient(90deg, rgba(0, 206, 201, 0.1), transparent 7px),
-          var(--color-surface);
+          linear-gradient(90deg, rgba(142, 103, 56, 0.92) 0 10px, transparent 10px calc(100% - 10px), rgba(142, 103, 56, 0.92) calc(100% - 10px)),
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.1) 0 1px, transparent 1px 18px),
+          var(--color-scroll);
+        color: #2a1d12;
       }
 
       .habit-card.ready {
-        border-color: rgba(0, 206, 201, 0.46);
+        border-color: var(--color-gold);
+      }
+
+      .habit-card::after {
+        content: "";
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        bottom: 10px;
+        left: 10px;
+        border: 1px dashed rgba(42, 29, 18, 0.28);
+        pointer-events: none;
       }
 
       .habit-top {
@@ -344,7 +352,7 @@
       }
 
       .quest-code {
-        color: var(--color-gold);
+        color: #5e3719;
         font-size: 11px;
         font-weight: 800;
         letter-spacing: 0;
@@ -354,6 +362,7 @@
       .habit-title strong {
         font-size: 15px;
         line-height: 1.35;
+        color: #21160d;
       }
 
       .habit-title span,
@@ -362,24 +371,29 @@
         line-height: 1.35;
       }
 
+      .habit-card .muted {
+        color: #5e4a2f;
+      }
+
       .status {
         flex: 0 0 auto;
-        border-radius: 8px;
+        border: 2px solid #6b4a25;
+        border-radius: 0;
         padding: 5px 8px;
-        background: rgba(245, 247, 250, 0.08);
-        color: var(--color-muted);
+        background: #f0d892;
+        color: #342111;
         font-size: 12px;
         font-weight: 800;
       }
 
       .status.ready {
-        background: rgba(0, 206, 201, 0.16);
-        color: var(--color-accent);
+        background: #315c39;
+        color: #f3e6c8;
       }
 
       .status.done {
-        background: rgba(253, 203, 110, 0.16);
-        color: var(--color-gold);
+        background: #6b4a25;
+        color: #f3e6c8;
       }
 
       .reward {
@@ -389,36 +403,37 @@
       }
 
       .reward span {
-        border-radius: 8px;
+        border-radius: 0;
         padding: 6px 8px;
-        border: 1px solid rgba(245, 247, 250, 0.06);
-        background: var(--color-surface-muted);
-        color: var(--color-text);
+        border: 2px solid #6b4a25;
+        background: #f0d892;
+        color: #21160d;
         font-size: 12px;
         font-weight: 700;
       }
 
       .checkin-button {
         min-height: 44px;
-        border: 0;
-        border-radius: 8px;
+        border: 2px solid #2d3c24;
+        border-radius: 0;
         padding: 0 16px;
-        background: linear-gradient(180deg, var(--color-accent), #00a8a4);
-        color: #082d2c;
+        background: var(--color-accent);
+        color: #10131a;
         font-size: 14px;
         font-weight: 800;
         cursor: default;
-        box-shadow: 0 8px 24px rgba(0, 206, 201, 0.18);
+        box-shadow: 4px 4px 0 rgba(42, 29, 18, 0.42);
       }
 
       .checkin-button.done {
-        background: var(--color-surface-muted);
-        color: var(--color-muted);
+        border-color: #6b4a25;
+        background: #a9854c;
+        color: #3a2a17;
       }
 
       .bottom-nav {
-        border-top: 1px solid rgba(245, 247, 250, 0.08);
-        background: rgba(30, 39, 46, 0.98);
+        border-top: 3px solid var(--color-border);
+        background: #20242e;
       }
 
       .nav {
@@ -430,7 +445,7 @@
         display: grid;
         place-items: center;
         gap: 5px;
-        border-radius: 8px;
+        border-radius: 0;
         padding: 8px 4px;
         color: var(--color-muted);
         font-size: 12px;
@@ -448,7 +463,8 @@
       }
 
       .nav-item.active {
-        background: rgba(0, 206, 201, 0.13);
+        border: 2px solid var(--color-accent);
+        background: #1d3428;
         color: var(--color-accent);
       }
 

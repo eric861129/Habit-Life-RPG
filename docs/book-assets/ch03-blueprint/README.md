@@ -6,11 +6,11 @@
 
 | 圖號 | 檔案 | 狀態 | 說明 |
 | :--- | :--- | :--- | :--- |
-| 圖 3-4-2 | `figure-3-4-2-static-prototype-desktop.png` | drafted | 桌面瀏覽器中的 RPG 風格靜態原型整頁預覽 |
-| 圖 3-4-2 | `figure-3-4-2-static-prototype-mobile.png` | drafted | 手機寬度中的 RPG 風格靜態原型整頁預覽 |
+| 圖 3-4-2 | `figure-3-4-2-static-prototype-desktop.png` | drafted | 桌面瀏覽器中的復古像素 RPG 風格靜態原型整頁預覽 |
+| 圖 3-4-2 | `figure-3-4-2-static-prototype-mobile.png` | drafted | 手機寬度中的復古像素 RPG 風格靜態原型整頁預覽 |
 | 圖 3-4-2 | `figure-3-4-2-static-prototype-core-ui.png` | drafted | 只裁出 App shell 的核心畫面，方便書稿排版評估 |
 | 圖 3-4-2 | `figure-3-4-2-hero-status-rpg-ui.png` | drafted | Hero Status 局部截圖，用於展示角色面板與 RPG HUD 語彙 |
-| 圖 3-4-2 | `figure-3-4-2-quest-log-rpg-ui.png` | drafted | Quest Log 局部截圖，用於展示 habit 如何遊戲化成任務清單 |
+| 圖 3-4-2 | `figure-3-4-2-quest-log-rpg-ui.png` | drafted | Quest Log 局部截圖，用於展示 habit 如何遊戲化成任務捲軸 |
 
 ## 出版前檢查
 
