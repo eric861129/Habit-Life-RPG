@@ -9,7 +9,7 @@
 | 階段 | Tag | 狀態 | 內容 |
 | :--- | :--- | :--- | :--- |
 | 第 2 章：工具箱 | `ch02-toolbox` | 已完成 | Repo 基礎、資安規則、章節導覽、圖片資產清單 |
-| 第 3 章：藍圖繪製 | `ch03-blueprint` | 尚未開始 | PRD、User Stories、UX Flow、UI Spec |
+| 第 3 章：藍圖繪製 | `ch03-blueprint` | 已完成 | PRD、User Stories、UX Flow、RPG UI Spec、靜態原型 |
 | 第 4 章：地基工程 | `ch04-architecture` | 尚未開始 | 架構圖、資料庫規格、OpenAPI 契約 |
 | 第 5 章：後端開發 | `ch05-backend-sqlite` | 尚未開始 | FastAPI + SQLite 本機後端 |
 | 第 6 章：品質保證 | `ch06-quality-pytest` | 尚未開始 | Pytest 與 TDD 測試防線 |
@@ -30,6 +30,7 @@ git tag --list
 
 ```bash
 git checkout ch02-toolbox
+git checkout ch03-blueprint
 ```
 
 回到最新進度：
@@ -38,6 +39,31 @@ git checkout ch02-toolbox
 git checkout main
 git pull
 ```
+
+## 第 3 章藍圖文件
+
+第 3 章把產品從想法整理成可施工文件，不提前寫正式後端或 React 前端。
+
+本章交付物：
+
+- `docs/PRD.md`
+- `docs/user-stories.md`
+- `docs/ux-flow.md`
+- `docs/ui-spec.md`
+- `prototype/static/index.html`
+- `docs/chapter-guides/ch03-blueprint.md`
+- `docs/book-assets/ch03-blueprint/`
+
+小節 checkpoint：
+
+```bash
+git checkout ch03-1-prd
+git checkout ch03-2-user-stories
+git checkout ch03-3-ux-flow
+git checkout ch03-4-ui-spec-static
+```
+
+`prototype/static/index.html` 是第 3 章的 RPG 風格靜態原型。它只展示遊戲化 UI：Hero Status、Quest Log、Reward 與底部導覽，不使用遊戲引擎，也不接 API。
 
 ## 第 2 章起手式
 
