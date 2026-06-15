@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Habit Life RPG Static Prototype</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%232D3436'/%3E%3Cpath d='M18 34 30 18l16 28H30l5-12z' fill='%2300CEC9'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --color-primary: #2d3436;
+        --color-accent: #00cec9;
+        --color-surface: #1e272e;
+        --color-surface-muted: #27343a;
+        --color-text: #f5f7fa;
+        --color-muted: #aeb8be;
+        --color-gold: #fdcb6e;
+        --color-danger: #ff7675;
+        --color-magic: #8f7cff;
+        --color-ink: #121a1f;
+        --shadow-strong: 0 24px 80px rgba(0, 0, 0, 0.36);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        min-height: 100%;
+        background: var(--color-primary);
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        color: var(--color-text);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          linear-gradient(135deg, rgba(0, 206, 201, 0.13), transparent 30%),
+          linear-gradient(315deg, rgba(253, 203, 110, 0.11), transparent 32%),
+          repeating-linear-gradient(90deg, rgba(245, 247, 250, 0.035) 0 1px, transparent 1px 34px),
+          repeating-linear-gradient(0deg, rgba(245, 247, 250, 0.028) 0 1px, transparent 1px 34px),
+          var(--color-primary);
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .page {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px 16px;
+      }
+
+      .app-shell {
+        width: min(100%, 420px);
+        min-height: min(820px, calc(100vh - 48px));
+        position: relative;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        overflow: hidden;
+        border: 1px solid rgba(0, 206, 201, 0.22);
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, rgba(30, 39, 46, 0.96), rgba(18, 26, 31, 0.98)),
+          var(--color-surface);
+        box-shadow: var(--shadow-strong);
+      }
+
+      .app-header {
+        padding: 24px 20px 16px;
+        border-bottom: 1px solid rgba(245, 247, 250, 0.08);
+        background: linear-gradient(180deg, rgba(0, 206, 201, 0.08), transparent);
+      }
+
+      .header-row,
+      .stat-row,
+      .habit-meta,
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 22px;
+        line-height: 1.2;
+        font-weight: 700;
+      }
+
+      h2 {
+        font-size: 16px;
+        line-height: 1.35;
+        font-weight: 700;
+      }
+
+      .subtitle,
+      .muted,
+      .meta {
+        color: var(--color-muted);
+      }
+
+      .subtitle {
+        margin-top: 6px;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .badge {
+        flex: 0 0 auto;
+        border: 1px solid rgba(253, 203, 110, 0.52);
+        border-radius: 8px;
+        padding: 6px 8px;
+        color: var(--color-gold);
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
+      .content {
+        display: grid;
+        gap: 16px;
+        padding: 16px 16px 20px;
+        overflow: auto;
+      }
+
+      .hero-card,
+      .level-panel,
+      .habit-card {
+        border: 1px solid rgba(245, 247, 250, 0.1);
+        border-radius: 8px;
+        background: var(--color-surface);
+        position: relative;
+        box-shadow: inset 0 0 0 1px rgba(0, 206, 201, 0.04);
+      }
+
+      .hero-card::before,
+      .level-panel::before,
+      .habit-card::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 18px;
+        height: 18px;
+        border-top: 2px solid rgba(253, 203, 110, 0.58);
+        border-left: 2px solid rgba(253, 203, 110, 0.58);
+        pointer-events: none;
+      }
+
+      .hero-card {
+        display: grid;
+        gap: 16px;
+        padding: 16px;
+        background:
+          linear-gradient(145deg, rgba(0, 206, 201, 0.1), transparent 42%),
+          linear-gradient(315deg, rgba(143, 124, 255, 0.12), transparent 44%),
+          var(--color-surface);
+      }
+
+      .avatar {
+        width: 52px;
+        height: 52px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(0, 206, 201, 0.48);
+        border-radius: 8px;
+        background: rgba(0, 206, 201, 0.12);
+        color: var(--color-accent);
+        font-weight: 800;
+        transform: rotate(45deg);
+      }
+
+      .avatar span {
+        transform: rotate(-45deg);
+      }
+
+      .hero-main {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .hero-name {
+        display: grid;
+        gap: 4px;
+      }
+
+      .hero-name strong {
+        font-size: 17px;
+        line-height: 1.25;
+      }
+
+      .hero-name span {
+        color: var(--color-muted);
+        font-size: 13px;
+      }
+
+      .rank-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .rank-chip {
+        min-width: 0;
+        border: 1px solid rgba(245, 247, 250, 0.08);
+        border-radius: 8px;
+        padding: 8px;
+        background: rgba(18, 26, 31, 0.54);
+      }
+
+      .rank-chip span {
+        display: block;
+        color: var(--color-muted);
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .rank-chip strong {
+        display: block;
+        margin-top: 3px;
+        color: var(--color-gold);
+        font-size: 13px;
+      }
+
+      .stat-row {
+        align-items: stretch;
+      }
+
+      .stat {
+        flex: 1;
+        display: grid;
+        gap: 4px;
+        min-width: 0;
+        border-radius: 8px;
+        padding: 10px;
+        background: var(--color-surface-muted);
+      }
+
+      .stat span {
+        color: var(--color-muted);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .stat strong {
+        overflow-wrap: anywhere;
+        font-size: 16px;
+      }
+
+      .progress {
+        height: 8px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(245, 247, 250, 0.12);
+      }
+
+      .progress > span {
+        display: block;
+        width: 30%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--color-accent), var(--color-gold));
+      }
+
+      .level-panel {
+        display: grid;
+        gap: 12px;
+        padding: 14px 16px;
+        border-color: rgba(253, 203, 110, 0.28);
+        background:
+          linear-gradient(135deg, rgba(253, 203, 110, 0.14), rgba(0, 206, 201, 0.12)),
+          var(--color-surface);
+      }
+
+      .panel-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .panel-top span {
+        color: var(--color-gold);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        padding-top: 4px;
+      }
+
+      .section-head p {
+        margin-top: 3px;
+        font-size: 13px;
+      }
+
+      .habit-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .habit-card {
+        display: grid;
+        gap: 14px;
+        padding: 14px;
+        background:
+          linear-gradient(90deg, rgba(0, 206, 201, 0.1), transparent 7px),
+          var(--color-surface);
+      }
+
+      .habit-card.ready {
+        border-color: rgba(0, 206, 201, 0.46);
+      }
+
+      .habit-top {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .habit-title {
+        display: grid;
+        gap: 5px;
+      }
+
+      .quest-code {
+        color: var(--color-gold);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .habit-title strong {
+        font-size: 15px;
+        line-height: 1.35;
+      }
+
+      .habit-title span,
+      .meta {
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .status {
+        flex: 0 0 auto;
+        border-radius: 8px;
+        padding: 5px 8px;
+        background: rgba(245, 247, 250, 0.08);
+        color: var(--color-muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .status.ready {
+        background: rgba(0, 206, 201, 0.16);
+        color: var(--color-accent);
+      }
+
+      .status.done {
+        background: rgba(253, 203, 110, 0.16);
+        color: var(--color-gold);
+      }
+
+      .reward {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .reward span {
+        border-radius: 8px;
+        padding: 6px 8px;
+        border: 1px solid rgba(245, 247, 250, 0.06);
+        background: var(--color-surface-muted);
+        color: var(--color-text);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .checkin-button {
+        min-height: 44px;
+        border: 0;
+        border-radius: 8px;
+        padding: 0 16px;
+        background: linear-gradient(180deg, var(--color-accent), #00a8a4);
+        color: #082d2c;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: default;
+        box-shadow: 0 8px 24px rgba(0, 206, 201, 0.18);
+      }
+
+      .checkin-button.done {
+        background: var(--color-surface-muted);
+        color: var(--color-muted);
+      }
+
+      .bottom-nav {
+        border-top: 1px solid rgba(245, 247, 250, 0.08);
+        background: rgba(30, 39, 46, 0.98);
+      }
+
+      .nav {
+        padding: 10px 14px 14px;
+      }
+
+      .nav-item {
+        width: 32%;
+        display: grid;
+        place-items: center;
+        gap: 5px;
+        border-radius: 8px;
+        padding: 8px 4px;
+        color: var(--color-muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .nav-item svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        stroke-width: 2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .nav-item.active {
+        background: rgba(0, 206, 201, 0.13);
+        color: var(--color-accent);
+      }
+
+      @media (max-width: 520px) {
+        .page {
+          padding: 0;
+        }
+
+        .app-shell {
+          width: 100%;
+          min-height: 100vh;
+          border: 0;
+          border-radius: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="app-shell" aria-label="Habit Life RPG static prototype">
+        <header class="app-header">
+          <div class="header-row">
+            <div>
+              <h1>Habit Life RPG</h1>
+              <p class="subtitle">Daily run：完成 habit，領取 EXP 與 gold</p>
+            </div>
+            <span class="badge">Rank D</span>
+          </div>
+        </header>
+
+        <div class="content">
+          <section class="hero-card" aria-label="Hero Status">
+            <div class="hero-main">
+              <div class="avatar" aria-hidden="true"><span>LV</span></div>
+              <div class="hero-name">
+                <strong>晨型冒險者</strong>
+                <span>Level 2 / Builder Mage</span>
+              </div>
+            </div>
+
+            <div class="rank-grid" aria-label="RPG rank status">
+              <div class="rank-chip">
+                <span>Guild Rank</span>
+                <strong>D-Class</strong>
+              </div>
+              <div class="rank-chip">
+                <span>Streak</span>
+                <strong>4 days</strong>
+              </div>
+              <div class="rank-chip">
+                <span>Next Gate</span>
+                <strong>280 EXP</strong>
+              </div>
+            </div>
+
+            <div class="stat-row">
+              <div class="stat">
+                <span>HP</span>
+                <strong>86 / 100</strong>
+              </div>
+              <div class="stat">
+                <span>EXP</span>
+                <strong>120 / 400</strong>
+              </div>
+              <div class="stat">
+                <span>Gold</span>
+                <strong>35</strong>
+              </div>
+            </div>
+
+            <div class="progress" aria-label="EXP progress">
+              <span></span>
+            </div>
+          </section>
+
+          <section class="level-panel" aria-label="升級提示">
+            <div class="panel-top">
+              <h2>Level gate unlocked</h2>
+              <span>Reward +40 EXP</span>
+            </div>
+            <p class="muted">再完成 7 個高價值 habit，就能升到 Level 3 並解鎖新稱號。</p>
+          </section>
+
+          <section aria-label="Quest Log">
+            <div class="section-head">
+              <div>
+                <h2>Quest Log</h2>
+                <p class="muted">畫面叫 Quest，系統仍以 habit 結算</p>
+              </div>
+              <span class="meta">2 / 4</span>
+            </div>
+
+            <div class="habit-list">
+              <article class="habit-card ready">
+                <div class="habit-top">
+                  <div class="habit-title">
+                    <span class="quest-code">Quest 01 / Mind</span>
+                    <strong>晨間 20 分鐘閱讀</strong>
+                    <span class="muted">提升專注與知識值</span>
+                  </div>
+                  <span class="status ready">Rank C</span>
+                </div>
+                <div class="habit-meta">
+                  <div class="reward">
+                    <span>+40 EXP</span>
+                    <span>+8 gold</span>
+                  </div>
+                  <button class="checkin-button" type="button">打卡領獎</button>
+                </div>
+              </article>
+
+              <article class="habit-card">
+                <div class="habit-top">
+                  <div class="habit-title">
+                    <span class="quest-code">Quest 02 / Body</span>
+                    <strong>喝水 2000 ml</strong>
+                    <span class="muted">維持 HP 回復效率</span>
+                  </div>
+                  <span class="status done">Cleared</span>
+                </div>
+                <div class="habit-meta">
+                  <div class="reward">
+                    <span>+25 EXP</span>
+                    <span>+5 gold</span>
+                  </div>
+                  <button class="checkin-button done" type="button">已完成</button>
+                </div>
+              </article>
+
+              <article class="habit-card">
+                <div class="habit-top">
+                  <div class="habit-title">
+                    <span class="quest-code">Quest 03 / Craft</span>
+                    <strong>整理今日開發筆記</strong>
+                    <span class="muted">累積工程熟練度</span>
+                  </div>
+                  <span class="status ready">Rank B</span>
+                </div>
+                <div class="habit-meta">
+                  <div class="reward">
+                    <span>+30 EXP</span>
+                    <span>+6 gold</span>
+                  </div>
+                  <button class="checkin-button" type="button">打卡領獎</button>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+
+        <footer class="bottom-nav" aria-label="底部導覽">
+          <nav class="nav">
+            <div class="nav-item active">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 11.5 12 4l9 7.5" />
+                <path d="M5.5 10.5V20h13v-9.5" />
+              </svg>
+              <span>Home</span>
+            </div>
+            <div class="nav-item">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 6h13" />
+                <path d="M8 12h13" />
+                <path d="M8 18h13" />
+                <path d="m3 6 1 1 2-2" />
+                <path d="m3 12 1 1 2-2" />
+                <path d="m3 18 1 1 2-2" />
+              </svg>
+              <span>Quests</span>
+            </div>
+            <div class="nav-item">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3 5 7v6c0 4 3 7 7 8 4-1 7-4 7-8V7z" />
+                <path d="M9 12h6" />
+                <path d="M12 9v6" />
+              </svg>
+              <span>Hero</span>
+            </div>
+          </nav>
+        </footer>
+      </section>
+    </main>
+  </body>
+</html>
