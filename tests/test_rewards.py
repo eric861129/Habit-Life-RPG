@@ -28,7 +28,7 @@ def test_checkin_reward_levels_up_at_level_threshold() -> None:
     assert user.gold == 18
 
 
-def test_checkin_reward_keeps_exp_cumulative_after_level_up() -> None:
+def test_checkin_reward_keeps_exp_cumulative_after_level_gain() -> None:
     user = make_user(level=2, exp=380, gold=0)
 
     leveled_up = apply_checkin_reward(user)
