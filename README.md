@@ -10,7 +10,7 @@
 | :--- | :--- | :--- | :--- |
 | 第 2 章：工具箱 | `ch02-toolbox` | 已完成 | Repo 基礎、資安規則、章節導覽、圖片資產清單 |
 | 第 3 章：藍圖繪製 | `ch03-blueprint` | 已完成 | PRD、User Stories、UX Flow、復古像素 RPG UI Spec、靜態原型 |
-| 第 4 章：地基工程 | `ch04-architecture` | 尚未開始 | 架構圖、資料庫規格、OpenAPI 契約 |
+| 第 4 章：地基工程 | `ch04-architecture` | 已完成 | 系統架構圖、資料庫綱要、OpenAPI 契約 |
 | 第 5 章：後端開發 | `ch05-backend-sqlite` | 尚未開始 | FastAPI + SQLite 本機後端 |
 | 第 6 章：品質保證 | `ch06-quality-pytest` | 尚未開始 | Pytest 與 TDD 測試防線 |
 | 第 7 章：前端開發 | `ch07-frontend-local` | 尚未開始 | React + Vite 本機前端整合 |
@@ -31,6 +31,7 @@ git tag --list
 ```bash
 git checkout ch02-toolbox
 git checkout ch03-blueprint
+git checkout ch04-architecture
 ```
 
 回到最新進度：
@@ -39,6 +40,29 @@ git checkout ch03-blueprint
 git checkout main
 git pull
 ```
+
+## 第 4 章地基工程
+
+第 4 章把產品藍圖翻成工程契約，不提前建立 FastAPI、SQLite database、React app 或 Azure 資源。
+
+本章交付物：
+
+- `docs/system-architecture.md`
+- `docs/database-schema.md`
+- `docs/openapi.yaml`
+- `docs/api-contract.md`
+- `docs/chapter-guides/ch04-architecture.md`
+- `docs/book-assets/ch04-foundation/`
+
+小節 checkpoint：
+
+```bash
+git checkout ch04-1-system-architecture
+git checkout ch04-2-database-schema
+git checkout ch04-3-openapi-contract
+```
+
+第四章正式鎖定 API 契約：`POST /api/v1/habits/{habit_id}/checkin` 成功時回傳 `current_exp`、`current_gold`、`current_level` 與 `leveled_up`，後續後端、測試與前端都必須對齊這份契約。
 
 ## 第 3 章藍圖文件
 

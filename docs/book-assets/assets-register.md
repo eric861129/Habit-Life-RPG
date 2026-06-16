@@ -42,8 +42,18 @@
 | 圖 3-2-2 | User Stories 同步至 NotebookLM | 截圖 | `docs/book-assets/ch03-blueprint/` | planned | 確認 NotebookLM 來源清單中同時出現 PRD 與 user-stories 文件 |
 | 圖 3-3-1 | ChatGPT 產生 Mermaid UX Flow | 截圖 | `docs/book-assets/ch03-blueprint/` | planned | 示範如何請 ChatGPT 把文字流程轉成 Mermaid 程式碼 |
 | 圖 3-3-2 | 在 VS Code 預覽 UX Flow | 截圖 | `docs/book-assets/ch03-blueprint/` | planned | 確認 `docs/ux-flow.md` 的 Mermaid 能在 Markdown Preview 中顯示流程圖 |
-| 圖 3-4-1 | Habit Life RPG 介面概念圖 | AI 概念圖 / 截圖 | `docs/book-assets/ch03-blueprint/` | planned | 用 UI Spec 轉成可討論的 Cyberpunk RPG 介面方向 |
+| 圖 3-4-1 | Habit Life RPG 介面概念圖 | AI 概念圖 / 截圖 | `docs/book-assets/ch03-blueprint/` | planned | 用 UI Spec 轉成可討論的復古像素 RPG 介面方向 |
 | 圖 3-4-2 | 第一版復古像素 RPG 靜態切版預覽 | 截圖 | `docs/book-assets/ch03-blueprint/figure-3-4-2-*.png` | drafted | 展示 `prototype/static/index.html` 的 Hero Status、任務捲軸式 Quest Log、Reward 與底部導覽 |
+
+## 第 4 章素材
+
+| 圖號 | 圖名 | 類型 | 檔案位置 | 狀態 | 操作目標 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 圖 4-1-1 | Habit Life RPG 前後端分離終局架構圖 | Mermaid / 架構圖 | `docs/system-architecture.md` | drafted | 讓讀者理解前端、後端、JSON 契約與 Azure SQL 的資料流 |
+| 圖 4-2-1 | Users 與 Habits 資料模型 ERD | Mermaid / ERD | `docs/database-schema.md` | drafted | 對照 `Users`、`Habits`、主鍵、外鍵與 `last_check_in` |
+| 圖 4-2-2 | 資料庫規格草案產出畫面 | 截圖 | `docs/book-assets/ch04-foundation/` | planned | 示範如何把資料模型條件交給 ChatGPT 整理成資料庫規格 |
+| 圖 4-3-1 | 用 Codex App 產出 OpenAPI 契約 | 截圖 | `docs/book-assets/ch04-foundation/` | planned | 確認 `docs/openapi.yaml` 已建立並包含 check-in endpoint |
+| 圖 4-3-2 | OpenAPI 契約同步至 NotebookLM | 截圖 | `docs/book-assets/ch04-foundation/` | planned | 確認 `openapi.yaml` 進入圖資室，後續可查詢欄位名稱 |
 
 ## 核對方式
 
