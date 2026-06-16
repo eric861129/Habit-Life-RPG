@@ -14,6 +14,7 @@ export default function App() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [checkingHabitId, setCheckingHabitId] = useState<number | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -47,6 +48,11 @@ export default function App() {
   }, []);
 
   const handleCheckIn = async (habitId: number) => {
+    if (checkingHabitId !== null) {
+      return;
+    }
+
+    setCheckingHabitId(habitId);
     try {
       const result = await checkInHabit(habitId);
       setProfile((currentProfile) =>
@@ -75,6 +81,8 @@ export default function App() {
       });
     } catch (error) {
       setNotice(toErrorNotice(error));
+    } finally {
+      setCheckingHabitId(null);
     }
   };
 
@@ -94,8 +102,8 @@ export default function App() {
           ) : (
             <>
               <HeroStatus profile={profile} />
-              <QuestLog habits={habits} onCheckIn={handleCheckIn} />
-              <LevelPanel exp={profile.exp} level={profile.level} />
+              <QuestLog habits={habits} checkingHabitId={checkingHabitId} onCheckIn={handleCheckIn} />
+              <LevelPanel exp={profile.exp} level={profile.level} isLevelUp={notice?.kind === "level"} />
             </>
           )}
         </div>

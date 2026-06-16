@@ -316,6 +316,10 @@ button {
     opacity: 0.72;
   }
 
+  .quest-scroll.is-checking {
+    filter: drop-shadow(4px 4px 0 rgba(214, 168, 79, 0.34));
+  }
+
   .habit-meta span,
   .habit-meta strong {
     font-size: 11px;
@@ -374,6 +378,12 @@ button {
   .level-panel {
     padding: 16px;
     border-color: var(--color-gold);
+  }
+
+  .level-panel.is-level-up {
+    background:
+      linear-gradient(135deg, rgba(214, 168, 79, 0.18), transparent 42%),
+      var(--color-surface);
   }
 
   .empty-state {

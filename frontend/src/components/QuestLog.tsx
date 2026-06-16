@@ -2,10 +2,11 @@ import type { Habit } from "../types";
 
 type QuestLogProps = {
   habits: Habit[];
-  onCheckIn: (habitId: number) => void;
+  checkingHabitId: number | null;
+  onCheckIn: (habitId: number) => void | Promise<void>;
 };
 
-export function QuestLog({ habits, onCheckIn }: QuestLogProps) {
+export function QuestLog({ habits, checkingHabitId, onCheckIn }: QuestLogProps) {
   return (
     <section className="quest-section" aria-labelledby="quest-log-title">
       <div className="section-heading">
@@ -18,7 +19,13 @@ export function QuestLog({ habits, onCheckIn }: QuestLogProps) {
 
       <div className="quest-list">
         {habits.map((habit, index) => (
-          <QuestScroll key={habit.id} habit={habit} index={index} onCheckIn={onCheckIn} />
+          <QuestScroll
+            key={habit.id}
+            habit={habit}
+            index={index}
+            isChecking={checkingHabitId === habit.id}
+            onCheckIn={onCheckIn}
+          />
         ))}
       </div>
     </section>
@@ -28,20 +35,23 @@ export function QuestLog({ habits, onCheckIn }: QuestLogProps) {
 type QuestScrollProps = {
   habit: Habit;
   index: number;
-  onCheckIn: (habitId: number) => void;
+  isChecking: boolean;
+  onCheckIn: (habitId: number) => void | Promise<void>;
 };
 
-function QuestScroll({ habit, index, onCheckIn }: QuestScrollProps) {
+function QuestScroll({ habit, index, isChecking, onCheckIn }: QuestScrollProps) {
   const isDone = habit.checked_in_today;
   const category = habit.category ?? "Guild";
+  const status = isDone ? "Done" : isChecking ? "Claiming" : "Ready";
+  const buttonLabel = isDone ? "已完成" : isChecking ? "結算中..." : "打卡領獎";
 
   return (
-    <article className={`quest-scroll ${isDone ? "is-done" : ""}`}>
+    <article className={`quest-scroll ${isDone ? "is-done" : ""} ${isChecking ? "is-checking" : ""}`}>
       <div className="scroll-caps" aria-hidden="true" />
       <div className="scroll-body">
         <div className="habit-meta">
           <span>Quest {String(index + 1).padStart(2, "0")}</span>
-          <strong>{isDone ? "Done" : "Ready"}</strong>
+          <strong>{status}</strong>
         </div>
         <h3>{habit.title}</h3>
         <p>{category} quest · Guild reward posted</p>
@@ -51,10 +61,10 @@ function QuestScroll({ habit, index, onCheckIn }: QuestScrollProps) {
           <button
             type="button"
             className="checkin-button"
-            disabled={isDone}
+            disabled={isDone || isChecking}
             onClick={() => onCheckIn(habit.id)}
           >
-            {isDone ? "已完成" : "打卡領獎"}
+            {buttonLabel}
           </button>
         </div>
       </div>
