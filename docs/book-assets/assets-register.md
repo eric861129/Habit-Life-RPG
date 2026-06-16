@@ -55,6 +55,17 @@
 | 圖 4-3-1 | 用 Codex App 產出 OpenAPI 契約 | 截圖 | `docs/book-assets/ch04-foundation/` | planned | 確認 `docs/openapi.yaml` 已建立並包含 check-in endpoint |
 | 圖 4-3-2 | OpenAPI 契約同步至 NotebookLM | 截圖 | `docs/book-assets/ch04-foundation/` | planned | 確認 `openapi.yaml` 進入圖資室，後續可查詢欄位名稱 |
 
+## 第 5 章素材
+
+| 圖號 | 圖名 | 類型 | 檔案位置 | 狀態 | 操作目標 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 圖 5-1-1 | FastAPI backend 專案結構 | terminal screenshot | `backend/` | planned | 顯示第五章開始建立後端骨架 |
+| 圖 5-1-2 | FastAPI Swagger UI | browser screenshot | `http://127.0.0.1:8000/docs` | planned | 展示本機 API 文件 |
+| 圖 5-2-1 | SQLAlchemy Users / Habits models | code screenshot | `backend/app/models.py` | planned | 對照第四章資料庫綱要 |
+| 圖 5-3-1 | Profile and habits API response | terminal/API client screenshot | local FastAPI | planned | 展示 `GET /api/v1/user/profile` 與 `GET /api/v1/habits` |
+| 圖 5-4-1 | Habit check-in success response | terminal/API client screenshot | local FastAPI | planned | 展示 `current_exp`、`current_gold`、`current_level`、`leveled_up` |
+| 圖 5-4-2 | Habit check-in error responses | terminal/API client screenshot | local FastAPI | planned | 展示 400、403、404 的 `{ "detail": "..." }` |
+
 ## 核對方式
 
 每次新增圖片後，請確認：

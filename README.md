@@ -11,7 +11,7 @@
 | 第 2 章：工具箱 | `ch02-toolbox` | 已完成 | Repo 基礎、資安規則、章節導覽、圖片資產清單 |
 | 第 3 章：藍圖繪製 | `ch03-blueprint` | 已完成 | PRD、User Stories、UX Flow、復古像素 RPG UI Spec、靜態原型 |
 | 第 4 章：地基工程 | `ch04-architecture` | 已完成 | 系統架構圖、資料庫綱要、OpenAPI 契約 |
-| 第 5 章：後端開發 | `ch05-backend-sqlite` | 尚未開始 | FastAPI + SQLite 本機後端 |
+| 第 5 章：後端開發 | `ch05-backend-sqlite` | 已完成 | FastAPI + SQLite 本機後端、habit check-in API |
 | 第 6 章：品質保證 | `ch06-quality-pytest` | 尚未開始 | Pytest 與 TDD 測試防線 |
 | 第 7 章：前端開發 | `ch07-frontend-local` | 尚未開始 | React + Vite 本機前端整合 |
 | 第 8 章：雲端部署 | `ch08-cloud-templates` | 尚未開始 | Azure SQL / App Service / SWA 範本與部署文件 |
@@ -32,6 +32,7 @@ git tag --list
 git checkout ch02-toolbox
 git checkout ch03-blueprint
 git checkout ch04-architecture
+git checkout ch05-backend-sqlite
 ```
 
 回到最新進度：
@@ -40,6 +41,49 @@ git checkout ch04-architecture
 git checkout main
 git pull
 ```
+
+## 第 5 章後端開發
+
+第 5 章依照第 4 章契約建立本機 FastAPI + SQLite 後端，讓 `Habit Life RPG` 的核心 API 可以實際執行。
+
+本章交付物：
+
+- `pyproject.toml`
+- `backend/app/main.py`
+- `backend/app/database.py`
+- `backend/app/models.py`
+- `backend/app/schemas.py`
+- `backend/app/security.py`
+- `backend/app/routers/user.py`
+- `backend/app/routers/habits.py`
+- `backend/app/services/rewards.py`
+- `tests/test_ch05_smoke.py`
+- `docs/chapter-guides/ch05-backend-sqlite.md`
+- `docs/book-assets/ch05-backend/`
+
+小節 checkpoint：
+
+```bash
+git checkout ch05-1-fastapi-skeleton
+git checkout ch05-2-sqlite-models
+git checkout ch05-3-profile-habits-api
+git checkout ch05-4-checkin-api
+```
+
+本章啟動方式：
+
+```bash
+python -m pip install -e ".[dev]"
+python -m uvicorn backend.app.main:app --reload --port 8000
+```
+
+本章使用 development-only token：
+
+```http
+Authorization: Bearer local-dev-token
+```
+
+第五章仍不包含 React app、Azure 部署、Alembic migration、正式登入註冊流程或完整 Pytest 測試矩陣。這些會在後續章節依序展開。
 
 ## 第 4 章地基工程
 
