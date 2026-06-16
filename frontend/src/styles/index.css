@@ -376,6 +376,13 @@ button {
     border-color: var(--color-gold);
   }
 
+  .empty-state {
+    padding: 20px;
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
   .level-panel p {
     margin-top: 4px;
     font-size: 12px;
