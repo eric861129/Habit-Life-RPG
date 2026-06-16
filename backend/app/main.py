@@ -15,12 +15,12 @@ async def lifespan(app: FastAPI):
     yield
 
 
-def create_app() -> FastAPI:
+def create_app(*, enable_startup_seed: bool = True) -> FastAPI:
     app = FastAPI(
         title="Habit Life RPG API",
         version="0.5.0",
         description="Chapter 5 local FastAPI backend for Habit Life RPG.",
-        lifespan=lifespan,
+        lifespan=lifespan if enable_startup_seed else None,
     )
     app.include_router(user.router)
     app.include_router(habits.router)
