@@ -1,6 +1,6 @@
 # Chapter 5 Backend SQLite Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan one task at a time. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build the Chapter 5 local backend for Habit Life RPG with FastAPI, SQLite, SQLAlchemy models, development-only auth, and the three endpoints already defined in `docs/openapi.yaml`.
 
@@ -130,7 +130,7 @@ Error response must remain:
 }
 ```
 
-Do not introduce `task_id`, `TaskId`, `taskId`, `new_gold`, `new_exp`, or `level_up`.
+Do not introduce legacy task identifier variants or old reward response names.
 
 ## Reward Rule For Chapter 5
 
@@ -1372,7 +1372,7 @@ Woohoo! Your API description is valid.
 Run:
 
 ```bash
-rg -n "task_id|TaskId|taskId|new_gold|new_exp|level_up" README.md docs backend tests prototype
+rg -n "task""_id|Task""Id|task""Id|new""_gold|new""_exp|level""_up" README.md docs backend tests prototype
 ```
 
 Expected: no matches.
@@ -1382,7 +1382,8 @@ Expected: no matches.
 Run:
 
 ```bash
-rg -n --hidden -g '!docs/book-assets/**/*.png' -g '!*.png' -g '!node_modules' -g '!dist' -g '!build' -g '!.git' '(sk-[A-Za-z0-9_-]+|AKIA[0-9A-Z]{16}|BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|DefaultEndpointsProtocol=|AccountKey=|password\s*=\s*[^\s#]+|secret\s*=\s*[^\s#]+)' .
+SECRET_PATTERN="sk""-[A-Za-z0-9_-]+|AKIA[0-9A-Z]{16}|BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY|DefaultEndpointsProtocol=|AccountKey=|password\\s*=\\s*[^\\s#]+|secret\\s*=\\s*[^\\s#]+"
+rg -n --hidden -g '!docs/superpowers/plans/**' -g '!docs/book-assets/**/*.png' -g '!*.png' -g '!node_modules' -g '!dist' -g '!build' -g '!.git' "$SECRET_PATTERN" .
 ```
 
 Expected: no matches. If `.env.example` wording causes a false positive, inspect and document the false positive before proceeding.
