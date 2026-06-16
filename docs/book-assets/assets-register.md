@@ -66,6 +66,17 @@
 | 圖 5-4-1 | Habit check-in success response | terminal/API client screenshot | local FastAPI | planned | 展示 `current_exp`、`current_gold`、`current_level`、`leveled_up` |
 | 圖 5-4-2 | Habit check-in error responses | terminal/API client screenshot | local FastAPI | planned | 展示 400、403、404 的 `{ "detail": "..." }` |
 
+## 第 6 章素材
+
+| 圖號 | 圖名 | 類型 | 檔案位置 | 狀態 | 操作目標 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 圖 6-1-1 | TDD red / green / refactor 流程示意 | diagram / slide | `docs/book-assets/ch06-quality/` | planned | 說明先寫測試、看失敗、補實作、再重構的節奏 |
+| 圖 6-1-2 | Pytest 隔離式 SQLite fixture | code screenshot | `tests/conftest.py` | planned | 展示暫存 DB、dependency override 與固定時間 |
+| 圖 6-2-1 | Check-in API 測試矩陣 | code screenshot | `tests/test_habits_api.py` | planned | 展示 200、400、401、403、404 測試 |
+| 圖 6-2-2 | Pytest 全部通過畫面 | terminal screenshot | `python -m pytest -q` | planned | 展示第六章測試防線完成 |
+| 圖 6-3-1 | Reward service 升級規則測試 | code screenshot | `tests/test_rewards.py` | planned | 展示 `+40 EXP`、`+8 gold`、升級與 EXP 不歸零 |
+| 圖 6-4-1 | 第六章 Git tag / Release | GitHub screenshot | `ch06-quality-pytest` | planned | 確認讀者可切回第六章完成版本 |
+
 ## 核對方式
 
 每次新增圖片後，請確認：

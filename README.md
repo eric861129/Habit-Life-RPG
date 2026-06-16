@@ -12,7 +12,7 @@
 | 第 3 章：藍圖繪製 | `ch03-blueprint` | 已完成 | PRD、User Stories、UX Flow、復古像素 RPG UI Spec、靜態原型 |
 | 第 4 章：地基工程 | `ch04-architecture` | 已完成 | 系統架構圖、資料庫綱要、OpenAPI 契約 |
 | 第 5 章：後端開發 | `ch05-backend-sqlite` | 已完成 | FastAPI + SQLite 本機後端、habit check-in API |
-| 第 6 章：品質保證 | `ch06-quality-pytest` | 尚未開始 | Pytest 與 TDD 測試防線 |
+| 第 6 章：品質保證 | `ch06-quality-pytest` | 已完成 | Pytest、本機隔離測試資料庫、API 測試矩陣 |
 | 第 7 章：前端開發 | `ch07-frontend-local` | 尚未開始 | React + Vite 本機前端整合 |
 | 第 8 章：雲端部署 | `ch08-cloud-templates` | 尚未開始 | Azure SQL / App Service / SWA 範本與部署文件 |
 | 第 9 章：維運合規 | `ch09-ops` | 尚未開始 | Runbook、監控、告警、隱私權政策 |
@@ -33,6 +33,7 @@ git checkout ch02-toolbox
 git checkout ch03-blueprint
 git checkout ch04-architecture
 git checkout ch05-backend-sqlite
+git checkout ch06-quality-pytest
 ```
 
 回到最新進度：
@@ -41,6 +42,39 @@ git checkout ch05-backend-sqlite
 git checkout main
 git pull
 ```
+
+## 第 6 章品質保證
+
+第 6 章不新增產品功能，而是把第 5 章後端行為變成可重複執行的 Pytest 防線。
+
+本章交付物：
+
+- `tests/conftest.py`
+- `tests/test_ch05_smoke.py`
+- `tests/test_user_api.py`
+- `tests/test_habits_api.py`
+- `tests/test_rewards.py`
+- `docs/chapter-guides/ch06-quality-pytest.md`
+- `docs/book-assets/ch06-quality/`
+
+小節 checkpoint：
+
+```bash
+git checkout ch06-1-test-fixtures
+git checkout ch06-2-api-contract-tests
+git checkout ch06-3-reward-tests
+git checkout ch06-4-docs-quality
+```
+
+本章測試方式：
+
+```bash
+python -m pytest -q
+```
+
+第六章採用每個測試獨立 SQLite 暫存檔，並用 FastAPI dependency override 避免污染本機 `habit_life_rpg.db`。
+
+第六章只做本機 Pytest，不建立 GitHub Actions CI、不建立 React app、不碰 Azure、不做正式登入註冊或 Alembic migration。
 
 ## 第 5 章後端開發
 
