@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #171923;
+  --color-accent: #7fb069;
+  --color-surface: #262a35;
+  --color-surface-muted: #34343f;
+  --color-text: #f3e6c8;
+  --color-muted: #b8aa88;
+  --color-gold: #d6a84f;
+  --color-danger: #b85c50;
+  --color-border: #6f6047;
+  --color-ink: #10131a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--color-primary);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--color-text);
+  font-family:
+    ui-monospace, "SFMono-Regular", Menlo, Consolas, "Noto Sans TC", monospace;
+  background-color: var(--color-primary);
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(111, 96, 71, 0.18) 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgba(111, 96, 71, 0.15) 32px);
+}
+
+button {
+  font: inherit;
+}
+
+@layer components {
+  .pixel-panel {
+    border: 3px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-surface);
+    box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.42);
+  }
+}
