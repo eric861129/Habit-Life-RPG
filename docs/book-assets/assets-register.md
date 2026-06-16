@@ -77,6 +77,16 @@
 | 圖 6-3-1 | Reward service 升級規則測試 | code screenshot | `tests/test_rewards.py` | planned | 展示 `+40 EXP`、`+8 gold`、升級與 EXP 不歸零 |
 | 圖 6-4-1 | 第六章 Git tag / Release | GitHub screenshot | `ch06-quality-pytest` | planned | 確認讀者可切回第六章完成版本 |
 
+## 第 7 章素材
+
+| 圖號 | 圖名 | 類型 | 檔案位置 | 狀態 | 操作目標 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 圖 7-2-1 | React RPG App Shell desktop | browser screenshot | `docs/book-assets/ch07-frontend/figure-7-2-1-rpg-app-shell-desktop.png` | drafted | 展示 React 重建後的復古像素 RPG 外殼 |
+| 圖 7-2-2 | React RPG App Shell mobile | browser screenshot | `docs/book-assets/ch07-frontend/figure-7-2-2-rpg-app-shell-mobile.png` | drafted | 確認 mobile 寬度下文字、任務捲軸與底部導覽不重疊 |
+| 圖 7-3-1 | API connected Quest Log | browser screenshot | `docs/book-assets/ch07-frontend/figure-7-3-1-api-connected-quest-log.png` | drafted | 展示 `GET /api/v1/habits` 載入後的 Quest Log |
+| 圖 7-4-1 | Check-in success state | browser screenshot | `docs/book-assets/ch07-frontend/figure-7-4-1-checkin-success-state.png` | drafted | 展示成功打卡後 EXP、gold 與 Done 狀態更新 |
+| 圖 7-4-2 | Error toast state | browser screenshot | `docs/book-assets/ch07-frontend/figure-7-4-2-error-toast-state.png` | drafted | 展示後端未啟動時的 RPG error toast，提醒讀者先啟動 FastAPI |
+
 ## 核對方式
 
 每次新增圖片後，請確認：

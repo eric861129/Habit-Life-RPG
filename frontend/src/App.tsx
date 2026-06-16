@@ -106,9 +106,9 @@ export default function App() {
               <LevelPanel exp={profile.exp} level={profile.level} isLevelUp={notice?.kind === "level"} />
             </>
           )}
+          <NoticeToast notice={notice} />
         </div>
         <BottomNav />
-        <NoticeToast notice={notice} />
       </div>
     </main>
   );

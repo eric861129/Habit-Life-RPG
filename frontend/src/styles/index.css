@@ -137,6 +137,7 @@ button {
 
   .content {
     display: grid;
+    align-content: start;
     gap: 16px;
     padding: 16px 16px 20px;
     overflow: auto;
@@ -422,10 +423,7 @@ button {
   }
 
   .notice-toast {
-    position: absolute;
-    right: 14px;
-    bottom: 82px;
-    left: 14px;
+    position: relative;
     display: grid;
     gap: 4px;
     border: 2px solid var(--color-gold);
@@ -456,8 +454,8 @@ button {
   }
 }
 
-@media (max-width: 460px) {
-  @layer components {
+@layer components {
+  @media (max-width: 460px) {
     .page {
       padding: 0;
     }

@@ -13,7 +13,7 @@
 | 第 4 章：地基工程 | `ch04-architecture` | 已完成 | 系統架構圖、資料庫綱要、OpenAPI 契約 |
 | 第 5 章：後端開發 | `ch05-backend-sqlite` | 已完成 | FastAPI + SQLite 本機後端、habit check-in API |
 | 第 6 章：品質保證 | `ch06-quality-pytest` | 已完成 | Pytest、本機隔離測試資料庫、API 測試矩陣 |
-| 第 7 章：前端開發 | `ch07-frontend-local` | 尚未開始 | React + Vite 本機前端整合 |
+| 第 7 章：前端開發 | `ch07-frontend-local` | 已完成 | React + Vite + TypeScript + Tailwind 本機前端整合 |
 | 第 8 章：雲端部署 | `ch08-cloud-templates` | 尚未開始 | Azure SQL / App Service / SWA 範本與部署文件 |
 | 第 9 章：維運合規 | `ch09-ops` | 尚未開始 | Runbook、監控、告警、隱私權政策 |
 | 第 10 章：Agent 視野 | `ch10-agent-ready` | 尚未開始 | Agent 工作流與下一個專案 checklist |
@@ -34,6 +34,7 @@ git checkout ch03-blueprint
 git checkout ch04-architecture
 git checkout ch05-backend-sqlite
 git checkout ch06-quality-pytest
+git checkout ch07-frontend-local
 ```
 
 回到最新進度：
@@ -42,6 +43,55 @@ git checkout ch06-quality-pytest
 git checkout main
 git pull
 ```
+
+## 第 7 章前端開發
+
+第 7 章把第 3 章復古像素 RPG 靜態原型重建成 React + Vite + TypeScript + Tailwind 前端，並串接第 5 章 FastAPI API。
+
+本章交付物：
+
+- `frontend/`
+- `frontend/src/api/client.ts`
+- `frontend/src/components/`
+- `frontend/src/styles/index.css`
+- `tests/test_cors.py`
+- `docs/chapter-guides/ch07-frontend-local.md`
+- `docs/book-assets/ch07-frontend/`
+
+小節 checkpoint：
+
+```bash
+git checkout ch07-1-vite-foundation
+git checkout ch07-2-rpg-ui-shell
+git checkout ch07-3-api-integration
+git checkout ch07-4-interaction-states
+git checkout ch07-5-visual-qa-assets
+git checkout ch07-frontend-local
+```
+
+本章啟動方式：
+
+```bash
+python -m uvicorn backend.app.main:app --reload --port 8000
+cd frontend
+npm install
+npm run dev -- --host 127.0.0.1
+```
+
+若 macOS 環境沒有 `python` 指令，可改用：
+
+```bash
+python3 -m uvicorn backend.app.main:app --reload --port 8000
+```
+
+前端預設讀取：
+
+```text
+VITE_API_BASE_URL=http://localhost:8000
+VITE_DEV_AUTH_TOKEN=local-dev-token
+```
+
+第七章不提供 mock fallback。讀者必須先啟動後端，再啟動前端，才能看到真實 API 回傳的 Hero Status、Quest Log、打卡成功與錯誤狀態。
 
 ## 第 6 章品質保證
 
