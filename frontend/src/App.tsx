@@ -1,14 +1,27 @@
+import { AppHeader } from "./components/AppHeader";
+import { BottomNav } from "./components/BottomNav";
+import { HeroStatus } from "./components/HeroStatus";
+import { LevelPanel } from "./components/LevelPanel";
+import { NoticeToast } from "./components/NoticeToast";
+import { QuestLog } from "./components/QuestLog";
+import { demoHabits, demoNotice, demoProfile } from "./data/demoState";
+
 export default function App() {
+  const handleStaticCheckIn = () => {
+    // API integration is added in Chapter 7.3.
+  };
+
   return (
-    <main className="min-h-screen bg-primary text-parchment">
-      <div className="mx-auto grid min-h-screen max-w-[420px] place-items-center px-4">
-        <section className="pixel-panel w-full p-6">
-          <p className="text-sm text-muted">Chapter 7 frontend foundation</p>
-          <h1 className="mt-2 text-[22px] font-bold">Habit Life RPG</h1>
-          <p className="mt-3 text-sm leading-6 text-muted">
-            React + Vite + TypeScript + Tailwind is ready for the retro RPG UI shell.
-          </p>
-        </section>
+    <main className="page font-mono">
+      <div className="app-shell">
+        <AppHeader />
+        <div className="content">
+          <HeroStatus profile={demoProfile} />
+          <QuestLog habits={demoHabits} onCheckIn={handleStaticCheckIn} />
+          <LevelPanel exp={demoProfile.exp} level={demoProfile.level} />
+        </div>
+        <BottomNav />
+        <NoticeToast notice={demoNotice} />
       </div>
     </main>
   );
