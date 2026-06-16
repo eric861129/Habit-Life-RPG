@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "habit-life-rpg"
+version = "0.5.0"
+description = "Chapter 5 local FastAPI backend for Habit Life RPG."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "pydantic-settings>=2.6.0",
+    "sqlalchemy>=2.0.36",
+    "uvicorn[standard]>=0.32.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "httpx>=0.27.2",
+    "pytest>=8.3.0"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+include = ["backend*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
