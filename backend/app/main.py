@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from backend.app.database import SessionLocal, init_db
+from backend.app.routers import habits, user
 from backend.app.seed import seed_demo_data
 
 
@@ -21,6 +22,8 @@ def create_app() -> FastAPI:
         description="Chapter 5 local FastAPI backend for Habit Life RPG.",
         lifespan=lifespan,
     )
+    app.include_router(user.router)
+    app.include_router(habits.router)
     return app
 
 
