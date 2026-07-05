@@ -1,0 +1,21 @@
+name: Azure App Service Template
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install backend dependencies
+        run: python -m pip install -e ".[dev]"
+      - name: Run backend tests
+        run: python -m pytest -q
+      - name: Deploy placeholder
+        run: |
+          echo "Configure AZURE_WEBAPP_PUBLISH_PROFILE before enabling deployment."
+          echo "This template is intentionally manual-only for the book checkpoint."

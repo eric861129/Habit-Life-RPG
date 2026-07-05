@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "habit-life-rpg"
-version = "0.5.0"
-description = "Chapter 5 local FastAPI backend for Habit Life RPG."
+version = "0.10.0"
+description = "Document-driven Habit Life RPG sample project for the book."
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115.0",
@@ -18,6 +18,9 @@ dependencies = [
 dev = [
     "httpx>=0.27.2",
     "pytest>=8.3.0"
+]
+azure = [
+    "pyodbc>=5.2.0"
 ]
 
 [tool.pytest.ini_options]
