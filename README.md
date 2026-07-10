@@ -14,9 +14,9 @@
 | 第 5 章：後端開發 | `ch05-backend-sqlite` | 已完成 | FastAPI + SQLite 本機後端、habit check-in API |
 | 第 6 章：品質保證 | `ch06-quality-pytest` | 已完成 | Pytest、本機隔離測試資料庫、API 測試矩陣 |
 | 第 7 章：前端開發 | `ch07-frontend-local` | 已完成 | React + Vite + TypeScript + Tailwind 本機前端整合 |
-| 第 8 章：雲端部署 | `ch08-cloud-templates` | 尚未開始 | Azure SQL / App Service / SWA 範本與部署文件 |
-| 第 9 章：維運合規 | `ch09-ops` | 尚未開始 | Runbook、監控、告警、隱私權政策 |
-| 第 10 章：Agent 視野 | `ch10-agent-ready` | 尚未開始 | Agent 工作流與下一個專案 checklist |
+| 第 8 章：雲端部署 | `ch08-cloud-templates` | 已完成 | Azure SQL / App Service / SWA 範本與部署文件 |
+| 第 9 章：維運合規 | `ch09-ops` | 已完成 | Runbook、監控、告警、隱私權政策 |
+| 第 10 章：Agent 視野 | `ch10-agent-ready` | 已完成 | Agent 工作流與下一個專案 checklist |
 
 ## 讀者如何使用
 
@@ -35,6 +35,9 @@ git checkout ch04-architecture
 git checkout ch05-backend-sqlite
 git checkout ch06-quality-pytest
 git checkout ch07-frontend-local
+git checkout ch08-cloud-templates
+git checkout ch09-ops
+git checkout ch10-agent-ready
 ```
 
 回到最新進度：
@@ -43,6 +46,46 @@ git checkout ch07-frontend-local
 git checkout main
 git pull
 ```
+
+## 第 10 章 Agent 視野
+
+第 10 章把專案整理成未來可交給 AI Agent 延續的交接狀態，重點不是新增功能，而是明確定義安全邊界、工作流與下一個專案的啟動清單。
+
+本章交付物：
+
+- `docs/chapter-guides/ch10-agent-ready.md`
+- `docs/agent-workflows/agent-ready-guide.md`
+- `docs/agent-workflows/next-project-checklist.md`
+- `docs/agent-workflows/repository-handoff.md`
+
+## 第 9 章維運合規
+
+第 9 章補上產品上線後需要的營運文件，讓範例專案不只「能跑」，也有基本的監控、告警、Runbook 與資料最小化判準。
+
+本章交付物：
+
+- `docs/chapter-guides/ch09-ops.md`
+- `docs/ops/runbook.md`
+- `docs/ops/monitoring-checklist.md`
+- `docs/ops/alerting-spec.md`
+- `docs/ops/privacy-policy-draft.md`
+- `docs/ops/data-minimization-checklist.md`
+
+## 第 8 章雲端部署
+
+第 8 章把本機專案整理成 Azure 部署範本。這一章不提交真實 Azure secret，只提供可安全放進 repository 的設定名稱、流程與 workflow template。
+
+本章交付物：
+
+- `docs/chapter-guides/ch08-cloud-templates.md`
+- `docs/deployment/azure-sql-schema.sql`
+- `docs/deployment/app-service.md`
+- `docs/deployment/static-web-apps.md`
+- `docs/deployment/environment-matrix.md`
+- `.github/workflows/azure-app-service-template.yml`
+- `.github/workflows/azure-static-web-apps-template.yml`
+
+第 8 章新增 `HLR_ALLOWED_ORIGINS`，讓 Azure Static Web Apps 的正式網址可以被加入 CORS 白名單，而不是把 CORS 放寬成全部允許。
 
 ## 第 7 章前端開發
 
