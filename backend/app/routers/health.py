@@ -16,7 +16,10 @@ def liveness() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@router.get("/ready")
+@router.get(
+    "/ready",
+    responses={503: {"description": "Database unavailable."}},
+)
 def readiness(db: Annotated[Session, Depends(get_db)]) -> dict[str, str]:
     try:
         db.execute(text("SELECT 1"))

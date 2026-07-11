@@ -9,7 +9,7 @@ def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(
         title="Habit Life RPG API",
-        version="0.5.0",
+        version="0.6.0",
         description="Complete book MVP API for Habit Life RPG.",
     )
     app.add_middleware(

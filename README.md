@@ -10,6 +10,7 @@
 | 第 3 章：藍圖繪製 | `chapter/03-blueprint` | PRD、User Stories、UX Flow、UI Spec 與完整 MVP 邊界 |
 | 第 4 章：系統架構 | `chapter/04-architecture` | SQLAlchemy 模型、Alembic migration 與 OpenAPI 契約 |
 | 第 5 章：後端開發 | `chapter/05-backend` | FastAPI、JWT、Habit CRUD、每日打卡、Streak 與獎勵交易 |
+| 第 6 章：品質保證 | `chapter/06-quality` | Pytest、Ruff、OpenAPI parity 與 GitHub Actions 品質閘門 |
 
 後續章節會在前一個分支之上累進，不會要求讀者自行合併零散程式碼。
 

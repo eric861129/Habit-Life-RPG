@@ -1,0 +1,70 @@
+name: HLR quality gate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install backend
+        run: python -m pip install -e ".[dev]"
+      - name: Lint backend
+        run: python -m ruff check backend tests scripts
+      - name: Test backend
+        run: python -m pytest -q
+
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install contract tools
+        run: python -m pip install -e ".[dev]"
+      - name: Verify OpenAPI
+        run: python scripts/verify_openapi.py
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect frontend checkpoint
+        id: frontend
+        run: |
+          if [ -f frontend/package-lock.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Frontend begins in Chapter 7; this checkpoint has nothing to build."
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.frontend.outputs.exists == 'true'
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend
+        if: steps.frontend.outputs.exists == 'true'
+        working-directory: frontend
+        run: npm ci
+      - name: Test frontend
+        if: steps.frontend.outputs.exists == 'true'
+        working-directory: frontend
+        run: npm test -- --run
+      - name: Build frontend
+        if: steps.frontend.outputs.exists == 'true'
+        working-directory: frontend
+        run: npm run build

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Habit Life RPG API
-  version: 0.5.0
+  version: 0.6.0
   description: Complete book MVP contract for the cumulative sample project.
 servers:
   - url: http://localhost:8000
@@ -76,6 +76,7 @@ paths:
                 type: array
                 items: {$ref: '#/components/schemas/HabitRead'}
         '401': {$ref: '#/components/responses/Unauthorized'}
+        '422': {$ref: '#/components/responses/ValidationError'}
     post:
       tags: [Habits]
       operationId: createHabit
@@ -108,6 +109,7 @@ paths:
               schema: {$ref: '#/components/schemas/HabitRead'}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
     patch:
       tags: [Habits]
       operationId: updateHabit
@@ -134,6 +136,7 @@ paths:
         '204': {description: Habit archived.}
         '401': {$ref: '#/components/responses/Unauthorized'}
         '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
   /api/v1/habits/{habit_id}/checkins:
     parameters:
       - $ref: '#/components/parameters/HabitId'
@@ -150,6 +153,7 @@ paths:
         '401': {$ref: '#/components/responses/Unauthorized'}
         '404': {$ref: '#/components/responses/NotFound'}
         '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
   /health/live:
     get:
       tags: [Health]

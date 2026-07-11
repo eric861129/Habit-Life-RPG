@@ -37,7 +37,14 @@ def to_habit_read(habit: Habit, today) -> HabitRead:
     )
 
 
-@router.get("", response_model=list[HabitRead])
+PROTECTED_RESPONSES = {401: {"description": "Authentication required or invalid."}}
+OWNED_RESOURCE_RESPONSES = {
+    **PROTECTED_RESPONSES,
+    404: {"description": "Habit not found."},
+}
+
+
+@router.get("", response_model=list[HabitRead], responses=PROTECTED_RESPONSES)
 def list_habits(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[Session, Depends(get_db)],
@@ -52,7 +59,12 @@ def list_habits(
     return [to_habit_read(habit, today) for habit in habits]
 
 
-@router.post("", response_model=HabitRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=HabitRead,
+    status_code=status.HTTP_201_CREATED,
+    responses=PROTECTED_RESPONSES,
+)
 def create_habit(
     payload: HabitCreate,
     current_user: Annotated[User, Depends(get_current_user)],
@@ -66,7 +78,7 @@ def create_habit(
     return to_habit_read(habit, checkin_service.today_in_timezone(settings))
 
 
-@router.get("/{habit_id}", response_model=HabitRead)
+@router.get("/{habit_id}", response_model=HabitRead, responses=OWNED_RESOURCE_RESPONSES)
 def get_habit(
     habit_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
@@ -77,7 +89,7 @@ def get_habit(
     return to_habit_read(habit, checkin_service.today_in_timezone(settings))
 
 
-@router.patch("/{habit_id}", response_model=HabitRead)
+@router.patch("/{habit_id}", response_model=HabitRead, responses=OWNED_RESOURCE_RESPONSES)
 def update_habit(
     habit_id: int,
     payload: HabitUpdate,
@@ -95,7 +107,11 @@ def update_habit(
     return to_habit_read(habit, checkin_service.today_in_timezone(settings))
 
 
-@router.delete("/{habit_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{habit_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=OWNED_RESOURCE_RESPONSES,
+)
 def archive_habit(
     habit_id: int,
     current_user: Annotated[User, Depends(get_current_user)],
@@ -111,6 +127,10 @@ def archive_habit(
     "/{habit_id}/checkins",
     response_model=CheckinRead,
     status_code=status.HTTP_201_CREATED,
+    responses={
+        **OWNED_RESOURCE_RESPONSES,
+        409: {"description": "Habit already checked in today."},
+    },
 )
 def check_in_habit(
     habit_id: int,

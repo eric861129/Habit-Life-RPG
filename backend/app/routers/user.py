@@ -10,6 +10,10 @@ from backend.app.security import get_current_user
 router = APIRouter(prefix="/api/v1/user", tags=["User"])
 
 
-@router.get("/profile", response_model=UserProfile)
+@router.get(
+    "/profile",
+    response_model=UserProfile,
+    responses={401: {"description": "Authentication required or invalid."}},
+)
 def get_profile(current_user: Annotated[User, Depends(get_current_user)]) -> User:
     return current_user

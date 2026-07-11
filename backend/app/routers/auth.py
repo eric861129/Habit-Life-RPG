@@ -20,7 +20,12 @@ from backend.app.security import (
 router = APIRouter(prefix="/api/v1/auth", tags=["Auth"])
 
 
-@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register",
+    response_model=TokenResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={409: {"description": "Username is already registered."}},
+)
 def register(
     credentials: Credentials,
     db: Annotated[Session, Depends(get_db)],
@@ -45,7 +50,11 @@ def register(
     return TokenResponse(access_token=create_access_token(str(user.id), settings))
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post(
+    "/login",
+    response_model=TokenResponse,
+    responses={401: {"description": "Invalid username or password."}},
+)
 def login(
     credentials: Credentials,
     db: Annotated[Session, Depends(get_db)],
