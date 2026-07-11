@@ -1,0 +1,32 @@
+# 第 8 章：Azure 雲端實戰
+
+`chapter/08-deployment` 將第 7 章 MVP 部署到零月費防線內的 Azure 示範環境。
+
+## 零成本防線
+
+- Static Web Apps 只允許 Free。
+- Linux App Service 只允許 F1。
+- Azure SQL 必須是 `useFreeLimit: true` 與 `freeLimitExhaustionBehavior: AutoPause`。
+- preflight 任一欄為 false，或估計月費不為 0，就停止部署。
+- Bicep 守門測試明確拒絕 B1、S1 與 Premium SKU。
+
+## 建立與部署
+
+```bash
+bash scripts/azure/preflight.sh <subscription-id> <location>
+bash scripts/azure/validate_infra.sh
+HLR_DEPLOY_CONFIRMED=YES bash scripts/azure/deploy.sh \
+  <subscription-id> <location> artifacts/azure/main.parameters.local.json
+```
+
+資源建立後，執行 `scripts/azure/configure_github.sh` 建立 `azure-demo` GitHub Environment、OIDC 憑證與被遮罩的 SWA Token。後端與前端 workflow 都必須先通過各自的 test job。
+
+## 公開驗收
+
+`artifacts/azure/deployment-urls.json` 保存不含祕密的公開網址，並由以下指令驗證：
+
+```bash
+python scripts/smoke_test.py --urls artifacts/azure/deployment-urls.json
+```
+
+公開網址與實際 smoke test 結果只會在資源成功建立後寫入；未部署前不使用假 URL 充當成品。
