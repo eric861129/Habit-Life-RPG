@@ -13,6 +13,17 @@ def test_liveness_and_readiness_are_public(client: TestClient):
     assert ready.json() == {"status": "ready"}
 
 
+def test_api_root_identifies_the_public_service(client: TestClient):
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "name": "Habit Life RPG API",
+        "docs": "/docs",
+        "health": "/health/ready",
+    }
+
+
 def test_readiness_returns_503_when_the_database_is_unavailable(
     client: TestClient,
     db_session: Session,

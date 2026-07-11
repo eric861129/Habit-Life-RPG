@@ -19,6 +19,15 @@ def create_app() -> FastAPI:
         allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
         allow_headers=["Authorization", "Content-Type"],
     )
+
+    @app.get("/", include_in_schema=False)
+    def service_root() -> dict[str, str]:
+        return {
+            "name": "Habit Life RPG API",
+            "docs": "/docs",
+            "health": "/health/ready",
+        }
+
     app.include_router(health.router)
     app.include_router(auth.router)
     app.include_router(user.router)

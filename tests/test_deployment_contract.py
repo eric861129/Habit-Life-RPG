@@ -4,7 +4,7 @@ from urllib.error import HTTPError
 
 import pytest
 
-from scripts.smoke_test import api_request, validate_urls, verify_reader_journey
+from scripts.smoke_test import api_request, fetch, validate_urls, verify_reader_journey
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -93,6 +93,29 @@ def test_api_request_preserves_non_json_error_body(monkeypatch):
         "https://hlr-api.azurewebsites.net/api/v1/auth/register",
         payload={"username": "reader", "password": "long-enough-password"},
     ) == (500, "Internal Server Error")
+
+
+def test_fetch_does_not_retry_a_permanent_404(monkeypatch):
+    attempts = 0
+
+    def fail_with_not_found(*args, **kwargs):
+        nonlocal attempts
+        attempts += 1
+        raise HTTPError(
+            "https://hlr-api.azurewebsites.net/missing",
+            404,
+            "Not Found",
+            {},
+            BytesIO(b"Not Found"),
+        )
+
+    monkeypatch.setattr("scripts.smoke_test.urlopen", fail_with_not_found)
+    monkeypatch.setattr("scripts.smoke_test.time.sleep", lambda seconds: None)
+
+    with pytest.raises(RuntimeError, match="HTTP 404"):
+        fetch("https://hlr-api.azurewebsites.net/missing")
+
+    assert attempts == 1
 
 
 def test_deploy_script_requires_guards_before_resource_creation():

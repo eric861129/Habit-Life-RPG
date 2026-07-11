@@ -44,7 +44,13 @@ def fetch(url: str, attempts: int = 10) -> tuple[int, str]:
         try:
             with urlopen(request, timeout=60) as response:
                 return response.status, response.read(2_000_000).decode("utf-8", errors="replace")
-        except (HTTPError, URLError, TimeoutError) as error:
+        except HTTPError as error:
+            if error.code < 500 and error.code not in {408, 429}:
+                raise RuntimeError(f"request returned HTTP {error.code}: {url}") from error
+            last_error = error
+            if attempt < attempts:
+                time.sleep(min(5 * attempt, 30))
+        except (URLError, TimeoutError) as error:
             last_error = error
             if attempt < attempts:
                 time.sleep(min(5 * attempt, 30))
