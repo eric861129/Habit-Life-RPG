@@ -21,6 +21,15 @@ def test_model_metadata_contains_the_three_mvp_tables():
     assert set(Base.metadata.tables) == {"users", "habits", "habit_checkins"}
 
 
+def test_checkin_foreign_keys_avoid_sql_server_multiple_cascade_paths():
+    foreign_keys = {
+        foreign_key.parent.name: foreign_key.ondelete
+        for foreign_key in Base.metadata.tables["habit_checkins"].foreign_keys
+    }
+
+    assert foreign_keys == {"habit_id": "CASCADE", "user_id": None}
+
+
 def test_one_habit_can_only_have_one_checkin_per_calendar_day(tmp_path):
     engine = create_engine(f"sqlite:///{tmp_path / 'contract.db'}")
     Base.metadata.create_all(engine)

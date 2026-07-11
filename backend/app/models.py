@@ -95,7 +95,7 @@ class HabitCheckin(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     habit_id: Mapped[int] = mapped_column(ForeignKey("habits.id", ondelete="CASCADE"))
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     checkin_date: Mapped[date] = mapped_column(Date, nullable=False)
     checked_in_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now_utc)
     exp_earned: Mapped[int] = mapped_column(Integer, nullable=False)

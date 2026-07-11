@@ -58,7 +58,7 @@ def upgrade() -> None:
         sa.CheckConstraint("exp_earned >= 0", name="ck_checkins_exp_nonnegative"),
         sa.CheckConstraint("gold_earned >= 0", name="ck_checkins_gold_nonnegative"),
         sa.ForeignKeyConstraint(["habit_id"], ["habits.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(["user_id"], ["users.id"]),
         sa.UniqueConstraint("habit_id", "checkin_date", name="uq_habit_checkin_day"),
     )
     op.create_index(
