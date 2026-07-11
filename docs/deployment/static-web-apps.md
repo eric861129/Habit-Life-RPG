@@ -14,7 +14,7 @@ HLR React 前端使用 Static Web Apps Free。免費方案不含 SLA，適合個
 
 ## 驗收
 
-1. 首頁回應 HTTP 200，並包含 `Habit Life RPG`。
+1. <https://victorious-dune-0ad92d11e.7.azurestaticapps.net> 回應 HTTP 200，並包含 `Habit Life RPG`。
 2. React 路由重新整理後仍回到 `index.html`。
 3. 前端建置檔只包含公開 HTTPS API 網址，不包含 token 或 secret。
 4. 註冊、建立 Habit 與 Check-in 在公開網址完整成功。

@@ -21,8 +21,9 @@ App Service 以 Python 3.12 啟動，先執行 Alembic migration，再啟動 Uvi
 
 ## 驗收網址
 
-- `/health/live`：進程活著即回應。
-- `/health/ready`：必須成功執行 Azure SQL `SELECT 1`。
-- `/docs`：FastAPI OpenAPI 互動文件。
+- <https://hlr-eric861129-v2-api.azurewebsites.net>：公開服務首頁。
+- <https://hlr-eric861129-v2-api.azurewebsites.net/health/live>：進程活著即回應。
+- <https://hlr-eric861129-v2-api.azurewebsites.net/health/ready>：必須成功執行 Azure SQL `SELECT 1`。
+- <https://hlr-eric861129-v2-api.azurewebsites.net/docs>：FastAPI OpenAPI 互動文件。
 
-`scripts/smoke_test.py` 會針對上述網址重試，以容納 F1 冷啟動時間。
+`scripts/smoke_test.py` 會針對冷啟動與暫時性 5xx 重試，但對永久性 4xx 立即失敗；它也會執行完整讀者業務旅程。

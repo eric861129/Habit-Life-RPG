@@ -12,6 +12,7 @@
 | 第 5 章：後端開發 | `chapter/05-backend` | FastAPI、JWT、Habit CRUD、每日打卡、Streak 與獎勵交易 |
 | 第 6 章：品質保證 | `chapter/06-quality` | Pytest、Ruff、OpenAPI parity 與 GitHub Actions 品質閘門 |
 | 第 7 章：前端開發 | `chapter/07-frontend` | React 響應式界面、帳號流程、Habit 管理與每日打卡 |
+| 第 8 章：Azure 雲端實戰 | `chapter/08-deployment` | Azure 免費方案、GitHub Actions、公開前後端與 Azure SQL |
 
 後續章節會在前一個分支之上累進，不會要求讀者自行合併零散程式碼。
 
@@ -67,6 +68,17 @@ npm run dev
 npm test -- --run
 npm run build
 ```
+
+## 第 8 章公開體驗
+
+- 前端：[Habit Life RPG](https://victorious-dune-0ad92d11e.7.azurestaticapps.net)
+- API：[服務首頁](https://hlr-eric861129-v2-api.azurewebsites.net)
+- API 文件：[Swagger UI](https://hlr-eric861129-v2-api.azurewebsites.net/docs)
+- Readiness：[Azure SQL 健康檢查](https://hlr-eric861129-v2-api.azurewebsites.net/health/ready)
+
+公開示範帳號為 `book-demo`，密碼為 `HabitLifeRPG2026!`。這是所有讀者共用的教學帳號，內容可能被其他讀者變更，請勿輸入個人或敏感資料；需要穩定資料時請自行註冊帳號。
+
+此環境使用 Static Web Apps Free、Linux App Service F1 與 Azure SQL Database free offer，適合教學展示但沒有 SLA，第一次開啟可能遇到冷啟動。公開驗收會檢查五個網址，以及註冊、登入、建立與列出習慣、打卡、防止重複打卡、獎勵與封存流程。
 
 ## 版本策略
 
