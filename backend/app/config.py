@@ -17,6 +17,11 @@ class Settings(BaseSettings):
         validation_alias="HLR_ALLOWED_ORIGINS",
     )
     environment: str = Field("development", validation_alias="HLR_ENVIRONMENT")
+    demo_username: str = Field("book-demo", validation_alias="HLR_DEMO_USERNAME")
+    demo_password: str = Field(
+        "replace-with-a-demo-password",
+        validation_alias="HLR_DEMO_PASSWORD",
+    )
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

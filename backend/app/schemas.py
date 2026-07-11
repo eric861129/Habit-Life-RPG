@@ -1,11 +1,19 @@
 from datetime import date, datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Credentials(BaseModel):
     username: str = Field(min_length=3, max_length=32)
     password: str = Field(min_length=10, max_length=128)
+
+    @field_validator("username")
+    @classmethod
+    def normalize_display_username(cls, value: str) -> str:
+        cleaned = value.strip()
+        if len(cleaned) < 3:
+            raise ValueError("Username must contain at least three visible characters.")
+        return cleaned
 
 
 class TokenResponse(BaseModel):
@@ -28,12 +36,44 @@ class HabitCreate(BaseModel):
     description: str | None = Field(default=None, max_length=500)
     category: str | None = Field(default=None, max_length=40)
 
+    @field_validator("title")
+    @classmethod
+    def clean_title(cls, value: str) -> str:
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("Habit title cannot be blank.")
+        return cleaned
+
+    @field_validator("description", "category")
+    @classmethod
+    def clean_optional_text(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        return value.strip() or None
+
 
 class HabitUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=120)
     description: str | None = Field(default=None, max_length=500)
     category: str | None = Field(default=None, max_length=40)
     is_archived: bool | None = None
+
+    @field_validator("title")
+    @classmethod
+    def clean_title(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("Habit title cannot be blank.")
+        return cleaned
+
+    @field_validator("description", "category")
+    @classmethod
+    def clean_optional_text(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        return value.strip() or None
 
 
 class HabitRead(BaseModel):

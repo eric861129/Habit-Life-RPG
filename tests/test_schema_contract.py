@@ -64,6 +64,18 @@ def test_initial_migration_upgrades_an_empty_sqlite_database(tmp_path):
     assert {"alembic_version", "users", "habits", "habit_checkins"} <= tables
 
 
+def test_migration_prefers_database_url_from_environment(tmp_path, monkeypatch):
+    database_path = tmp_path / "environment-target.db"
+    monkeypatch.setenv("DATABASE_URL", f"sqlite:///{database_path}")
+    config = Config(str(ROOT / "alembic.ini"))
+
+    command.upgrade(config, "head")
+
+    assert database_path.exists()
+    tables = set(inspect(create_engine(f"sqlite:///{database_path}")).get_table_names())
+    assert "habit_checkins" in tables
+
+
 def test_committed_openapi_declares_every_book_mvp_endpoint():
     contract = yaml.safe_load((ROOT / "docs" / "openapi.yaml").read_text(encoding="utf-8"))
     paths = contract["paths"]

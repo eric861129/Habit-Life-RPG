@@ -9,6 +9,7 @@
 | 第 2 章：工具箱 | `chapter/02-toolbox` | 安全環境範本、Git 規範、AI 協作規則與可驗證開發現場 |
 | 第 3 章：藍圖繪製 | `chapter/03-blueprint` | PRD、User Stories、UX Flow、UI Spec 與完整 MVP 邊界 |
 | 第 4 章：系統架構 | `chapter/04-architecture` | SQLAlchemy 模型、Alembic migration 與 OpenAPI 契約 |
+| 第 5 章：後端開發 | `chapter/05-backend` | FastAPI、JWT、Habit CRUD、每日打卡、Streak 與獎勵交易 |
 
 後續章節會在前一個分支之上累進，不會要求讀者自行合併零散程式碼。
 
@@ -32,6 +33,18 @@ python -m pytest -q
 ```
 
 `.env.example` 只提供可公開的變數名稱與假值；`.env` 永遠不進 Git。
+
+## 第 5 章後端啟動
+
+```bash
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+alembic upgrade head
+python -m backend.app.seed
+python -m uvicorn backend.app.main:app --reload --port 8000
+```
+
+執行 seed 前必須先替換 `.env` 的 `HLR_DEMO_PASSWORD`。API 文件位於 `http://localhost:8000/docs`；應用程式不會在每次啟動時自動重建或重設示範資料。
 
 ## 版本策略
 

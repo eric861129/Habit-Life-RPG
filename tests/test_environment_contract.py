@@ -10,6 +10,8 @@ REQUIRED_EXAMPLE_VALUES = {
     "HLR_APP_TIMEZONE": "Asia/Taipei",
     "HLR_ALLOWED_ORIGINS": "http://localhost:5173,http://127.0.0.1:5173",
     "HLR_ENVIRONMENT": "development",
+    "HLR_DEMO_USERNAME": "book-demo",
+    "HLR_DEMO_PASSWORD": "replace-with-a-demo-password",
     "VITE_API_BASE_URL": "http://localhost:8000",
 }
 
@@ -41,7 +43,7 @@ def test_example_environment_contains_the_public_configuration_contract():
 def test_example_environment_contains_no_real_secrets():
     values = parse_example()
     assert values["HLR_JWT_SECRET"] == "replace-with-a-long-random-secret"
-    assert all("password" not in key.lower() for key in values)
+    assert values["HLR_DEMO_PASSWORD"].startswith("replace-with-")
     assert all("token" not in value.lower() for value in values.values())
 
 
