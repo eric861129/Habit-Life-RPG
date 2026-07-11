@@ -14,9 +14,13 @@
 - Never commit `.env`, credentials, tokens, publish profiles, or connection strings.
 - Do not weaken authentication, authorization, CORS, or database constraints to make a test pass.
 - Do not rewrite published chapter branches, tags, or releases.
+- Keep Azure on Static Web Apps Free, Linux App Service F1, and SQL free offer with `AutoPause`; never substitute a paid SKU.
+- Treat public URLs, chapter branches, Tags, Releases, the Runbook, and the privacy policy as reader-facing contracts.
 
 ## Verification
 
 - Python changes: run `python -m pytest -q` and `python -m ruff check backend tests scripts` once those tools are introduced.
 - Frontend changes: run `npm test -- --run` and `npm run build` from `frontend/`.
 - Deployment changes: run the Azure zero-cost preflight before creating resources.
+- Final handoff: run `python scripts/final_verify.py` and report the exact failing layer if it does not pass.
+- Use `python scripts/final_verify.py --skip-live` for offline work; never replace the live release check with the offline result.

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "habit-life-rpg"
-version = "0.6.0"
+version = "1.0.0"
 description = "Cumulative sample project for Left Blueprint, Right Magic."
 requires-python = ">=3.11"
 dependencies = [

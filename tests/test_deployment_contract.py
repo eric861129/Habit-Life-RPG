@@ -181,6 +181,24 @@ def test_operations_probe_is_scheduled_and_read_only():
     assert "docs/deployment/public-urls.json" in workflow
 
 
+def test_workflows_use_node_24_compatible_official_actions():
+    workflows = list((ROOT / ".github" / "workflows").glob("*.yml"))
+    text = "\n".join(path.read_text(encoding="utf-8") for path in workflows)
+
+    assert "actions/checkout@v4" not in text
+    assert "actions/setup-node@v4" not in text
+    assert "actions/setup-python@v5" not in text
+    assert "actions/checkout@v6" in text
+    assert "actions/setup-node@v6" in text
+    assert "actions/setup-python@v6" in text
+
+
+def test_pre_push_hook_runs_the_offline_final_verifier():
+    hook = (ROOT / ".githooks" / "pre-push").read_text(encoding="utf-8")
+
+    assert "scripts/final_verify.py --skip-live" in hook
+
+
 def test_github_configuration_uses_environment_scoped_oidc():
     text = (ROOT / "scripts" / "azure" / "configure_github.sh").read_text(encoding="utf-8")
 

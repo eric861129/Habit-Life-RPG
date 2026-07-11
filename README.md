@@ -14,6 +14,7 @@
 | 第 7 章：前端開發 | `chapter/07-frontend` | React 響應式界面、帳號流程、Habit 管理與每日打卡 |
 | 第 8 章：Azure 雲端實戰 | `chapter/08-deployment` | Azure 免費方案、GitHub Actions、公開前後端與 Azure SQL |
 | 第 9 章：永續經營 | `chapter/09-operations` | 唯讀健康探測、Azure Monitor 規範、Runbook 與隱私政策 |
+| 第 10 章：Agent-ready | `chapter/10-agent-ready` | Agent 規範、Codex Skill、Git Hook 與最終交付驗證 |
 
 後續章節會在前一個分支之上累進，不會要求讀者自行合併零散程式碼。
 
@@ -80,6 +81,14 @@ npm run build
 公開示範帳號為 `book-demo`，密碼為 `HabitLifeRPG2026!`。這是所有讀者共用的教學帳號，內容可能被其他讀者變更，請勿輸入個人或敏感資料；需要穩定資料時請自行註冊帳號。
 
 此環境使用 Static Web Apps Free、Linux App Service F1 與 Azure SQL Database free offer，適合教學展示但沒有 SLA，第一次開啟可能遇到冷啟動。公開驗收會檢查五個網址，以及註冊、登入、建立與列出習慣、打卡、防止重複打卡、獎勵與封存流程。
+
+## 最終驗證
+
+```bash
+python scripts/final_verify.py
+```
+
+此命令依序執行 Ruff、Pytest、OpenAPI parity、前端測試、production build 與正式網址唯讀探測。Agent 工作方式、可選的 pre-push Hook 與章節發版 Skill 分別位於 `docs/agent-workflow.md`、`.githooks/pre-push` 與 `.codex/skills/hlr-release/SKILL.md`。
 
 ## 版本策略
 

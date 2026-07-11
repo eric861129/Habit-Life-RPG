@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Habit Life RPG API
-  version: 0.6.0
+  version: 1.0.0
   description: Complete book MVP contract for the cumulative sample project.
 servers:
   - url: http://localhost:8000
