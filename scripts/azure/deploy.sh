@@ -9,7 +9,7 @@ fi
 SUBSCRIPTION_ID="$1"
 LOCATION="$2"
 PARAMETERS_FILE="$3"
-DEPLOYMENT_NAME="hlr-book-v2"
+DEPLOYMENT_NAME="hlr-book-v2-${LOCATION}"
 
 case "$PARAMETERS_FILE" in
   *.local.json) ;;

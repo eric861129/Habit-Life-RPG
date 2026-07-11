@@ -21,6 +21,10 @@ GUARDS = (
     ("static_web_apps_free", "Static Web Apps Free is unavailable"),
     ("app_service_f1_linux", "App Service Linux F1 is unavailable"),
     ("azure_sql_free_offer", "Azure SQL free offer is unavailable"),
+    (
+        "azure_sql_free_region_compatible",
+        "requested location conflicts with existing Azure SQL free databases",
+    ),
 )
 
 
@@ -75,6 +79,32 @@ def has_resource_type(provider: dict[str, Any], resource_type: str) -> bool:
     )
 
 
+def resource_type_supports_location(
+    provider: dict[str, Any],
+    resource_type: str,
+    location: str,
+) -> bool:
+    expected_type = resource_type.lower()
+    expected_location = normalized_location(location)
+    for item in provider.get("resourceTypes", []):
+        if not isinstance(item, dict):
+            continue
+        if str(item.get("resourceType", "")).lower() != expected_type:
+            continue
+        return expected_location in location_names(item.get("locations", []))
+    return False
+
+
+def free_database_locations(databases: list[Any]) -> set[str]:
+    return {
+        normalized_location(str(database.get("location", "")))
+        for database in databases
+        if isinstance(database, dict)
+        and "freelimit" in str(database.get("kind", "")).lower()
+        and database.get("location")
+    }
+
+
 def collect(subscription_id: str, location: str) -> dict[str, object]:
     report: dict[str, object] = {
         "authenticated": False,
@@ -85,6 +115,8 @@ def collect(subscription_id: str, location: str) -> dict[str, object]:
         "static_web_apps_free": False,
         "app_service_f1_linux": False,
         "azure_sql_free_offer": False,
+        "azure_sql_free_region_compatible": False,
+        "existing_free_database_locations": [],
         "estimated_monthly_cost": None,
     }
 
@@ -99,7 +131,7 @@ def collect(subscription_id: str, location: str) -> dict[str, object]:
         return report
 
     try:
-        locations = run_az("account", "list-locations", "--subscription", subscription_id)
+        locations = run_az("account", "list-locations")
         web_provider = run_az(
             "provider", "show", "--namespace", "Microsoft.Web", "--subscription", subscription_id
         )
@@ -118,6 +150,14 @@ def collect(subscription_id: str, location: str) -> dict[str, object]:
         sql_editions = run_az(
             "sql", "db", "list-editions", "--location", location, "--subscription", subscription_id
         )
+        databases = run_az(
+            "resource",
+            "list",
+            "--resource-type",
+            "Microsoft.Sql/servers/databases",
+            "--subscription",
+            subscription_id,
+        )
     except (subprocess.SubprocessError, json.JSONDecodeError):
         return report
 
@@ -127,6 +167,7 @@ def collect(subscription_id: str, location: str) -> dict[str, object]:
         isinstance(web_provider, dict)
         and provider_registered(web_provider)
         and has_resource_type(web_provider, "staticSites")
+        and resource_type_supports_location(web_provider, "staticSites", location)
     )
     report["app_service_f1_linux"] = (
         isinstance(f1_locations, list) and requested in location_names(f1_locations)
@@ -140,6 +181,13 @@ def collect(subscription_id: str, location: str) -> dict[str, object]:
         isinstance(sql_provider, dict)
         and provider_registered(sql_provider)
         and sql_general_purpose
+    )
+    existing_free_locations = (
+        free_database_locations(databases) if isinstance(databases, list) else set()
+    )
+    report["existing_free_database_locations"] = sorted(existing_free_locations)
+    report["azure_sql_free_region_compatible"] = (
+        not existing_free_locations or requested in existing_free_locations
     )
 
     if all(report.get(key) is True for key, _ in GUARDS):

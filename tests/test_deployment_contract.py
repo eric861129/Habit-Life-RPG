@@ -39,6 +39,12 @@ def test_deploy_script_requires_guards_before_resource_creation():
     assert "BillOverUsage" not in text
 
 
+def test_deploy_script_scopes_subscription_deployment_name_to_location():
+    text = (ROOT / "scripts" / "azure" / "deploy.sh").read_text(encoding="utf-8")
+
+    assert 'DEPLOYMENT_NAME="hlr-book-v2-${LOCATION}"' in text
+
+
 def test_deployment_workflows_test_before_deploying():
     backend = (ROOT / ".github" / "workflows" / "deploy-backend.yml").read_text(
         encoding="utf-8"
