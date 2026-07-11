@@ -146,6 +146,15 @@ def verify_reader_journey(urls: dict[str, str], *, request=api_request) -> dict[
     habit_id = habit["id"]
     result["create_habit"] = status
 
+    status, habits = request("GET", f"{api}/api/v1/habits", token=token)
+    if (
+        status != 200
+        or not isinstance(habits, list)
+        or not any(item.get("id") == habit_id for item in habits if isinstance(item, dict))
+    ):
+        raise RuntimeError(f"active habit listing failed with HTTP {status}")
+    result["list_habits"] = status
+
     checkin_url = f"{api}/api/v1/habits/{habit_id}/checkins"
     status, checkin = request("POST", checkin_url, token=token)
     if (

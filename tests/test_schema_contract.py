@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import Base
 from backend.app.models import Habit, HabitCheckin, User
+from backend.app.routers.habits import habit_list_statement
 from backend.migrations.database_url import resolve_migration_database_url
 
 
@@ -41,6 +42,19 @@ def test_reader_text_columns_compile_to_sql_server_unicode_types():
     assert "title NVARCHAR(120)" in habits_ddl
     assert "description NVARCHAR(500)" in habits_ddl
     assert "category NVARCHAR(40)" in habits_ddl
+
+
+def test_active_habit_filter_compiles_for_sql_server_bit_columns():
+    statement = habit_list_statement(user_id=7, include_archived=False)
+    sql = str(
+        statement.compile(
+            dialect=mssql.dialect(),
+            compile_kwargs={"literal_binds": True},
+        )
+    )
+
+    assert "habits.is_archived = 0" in sql
+    assert "habits.is_archived IS 0" not in sql
 
 
 def test_one_habit_can_only_have_one_checkin_per_calendar_day(tmp_path):

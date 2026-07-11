@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import select
+from sqlalchemy import false, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -37,6 +37,13 @@ def to_habit_read(habit: Habit, today) -> HabitRead:
     )
 
 
+def habit_list_statement(user_id: int, include_archived: bool):
+    query = select(Habit).where(Habit.user_id == user_id)
+    if not include_archived:
+        query = query.where(Habit.is_archived == false())
+    return query.order_by(Habit.created_at, Habit.id)
+
+
 PROTECTED_RESPONSES = {401: {"description": "Authentication required or invalid."}}
 OWNED_RESOURCE_RESPONSES = {
     **PROTECTED_RESPONSES,
@@ -51,10 +58,7 @@ def list_habits(
     settings: Annotated[Settings, Depends(get_settings)],
     include_archived: Annotated[bool, Query()] = False,
 ) -> list[HabitRead]:
-    query = select(Habit).where(Habit.user_id == current_user.id)
-    if not include_archived:
-        query = query.where(Habit.is_archived.is_(False))
-    habits = db.scalars(query.order_by(Habit.created_at, Habit.id)).all()
+    habits = db.scalars(habit_list_statement(current_user.id, include_archived)).all()
     today = checkin_service.today_in_timezone(settings)
     return [to_habit_read(habit, today) for habit in habits]
 

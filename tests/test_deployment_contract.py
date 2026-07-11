@@ -49,6 +49,10 @@ def test_reader_journey_verifies_auth_habits_rewards_and_duplicate_checkin():
             ("POST", "/api/v1/auth/register"): (201, {"access_token": "register-token"}),
             ("POST", "/api/v1/auth/login"): (200, {"access_token": "login-token"}),
             ("POST", "/api/v1/habits"): (201, {"id": 42, "title": "部署驗收"}),
+            ("GET", "/api/v1/habits"): (
+                200,
+                [{"id": 42, "title": "部署驗收", "is_archived": False}],
+            ),
             ("POST", "/api/v1/habits/42/checkins"): checkin_responses,
             ("GET", "/api/v1/user/profile"): (
                 200,
@@ -70,10 +74,11 @@ def test_reader_journey_verifies_auth_habits_rewards_and_duplicate_checkin():
         "create_habit": 201,
         "duplicate_checkin": 409,
         "login": 200,
+        "list_habits": 200,
         "profile": 200,
         "register": 201,
     }
-    assert len(calls) == 7
+    assert len(calls) == 8
 
 
 def test_api_request_preserves_non_json_error_body(monkeypatch):
