@@ -1,0 +1,262 @@
+openapi: 3.1.0
+info:
+  title: Habit Life RPG API
+  version: 0.4.0
+  description: Complete book MVP contract for the cumulative sample project.
+servers:
+  - url: http://localhost:8000
+    description: Local development
+tags:
+  - name: Auth
+  - name: User
+  - name: Habits
+  - name: Health
+paths:
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Credentials'}
+      responses:
+        '201':
+          description: Account created.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/TokenResponse'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/Credentials'}
+      responses:
+        '200':
+          description: Authenticated.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/TokenResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+  /api/v1/user/profile:
+    get:
+      tags: [User]
+      operationId: getProfile
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Current user profile.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserProfile'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /api/v1/habits:
+    get:
+      tags: [Habits]
+      operationId: listHabits
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: query
+          name: include_archived
+          schema: {type: boolean, default: false}
+      responses:
+        '200':
+          description: Owned habits.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/HabitRead'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+    post:
+      tags: [Habits]
+      operationId: createHabit
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/HabitWrite'}
+      responses:
+        '201':
+          description: Habit created.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/HabitRead'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+  /api/v1/habits/{habit_id}:
+    parameters:
+      - $ref: '#/components/parameters/HabitId'
+    get:
+      tags: [Habits]
+      operationId: getHabit
+      security: [{bearerAuth: []}]
+      responses:
+        '200':
+          description: Owned habit.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/HabitRead'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    patch:
+      tags: [Habits]
+      operationId: updateHabit
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/HabitUpdate'}
+      responses:
+        '200':
+          description: Habit updated.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/HabitRead'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+    delete:
+      tags: [Habits]
+      operationId: archiveHabit
+      security: [{bearerAuth: []}]
+      responses:
+        '204': {description: Habit archived.}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /api/v1/habits/{habit_id}/checkins:
+    parameters:
+      - $ref: '#/components/parameters/HabitId'
+    post:
+      tags: [Habits]
+      operationId: checkInHabit
+      security: [{bearerAuth: []}]
+      responses:
+        '201':
+          description: Daily check-in created and rewards applied.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/CheckinRead'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /health/live:
+    get:
+      tags: [Health]
+      operationId: liveness
+      responses:
+        '200':
+          description: Process is alive.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Health'}
+  /health/ready:
+    get:
+      tags: [Health]
+      operationId: readiness
+      responses:
+        '200':
+          description: Database is reachable.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Health'}
+        '503':
+          description: Database is unavailable.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    HabitId:
+      in: path
+      name: habit_id
+      required: true
+      schema: {type: integer, minimum: 1}
+  responses:
+    Unauthorized:
+      description: Authentication required or invalid.
+    NotFound:
+      description: Resource was not found.
+    Conflict:
+      description: Unique business rule conflict.
+    ValidationError:
+      description: Request validation failed.
+  schemas:
+    Credentials:
+      type: object
+      required: [username, password]
+      properties:
+        username: {type: string, minLength: 3, maxLength: 32}
+        password: {type: string, minLength: 10, maxLength: 128, format: password}
+    TokenResponse:
+      type: object
+      required: [access_token, token_type]
+      properties:
+        access_token: {type: string}
+        token_type: {type: string, const: bearer}
+    UserProfile:
+      type: object
+      required: [id, username, level, exp, gold]
+      properties:
+        id: {type: integer}
+        username: {type: string}
+        level: {type: integer, minimum: 1}
+        exp: {type: integer, minimum: 0}
+        gold: {type: integer, minimum: 0}
+    HabitWrite:
+      type: object
+      required: [title]
+      properties:
+        title: {type: string, minLength: 1, maxLength: 120}
+        description: {type: [string, 'null'], maxLength: 500}
+        category: {type: [string, 'null'], maxLength: 40}
+    HabitUpdate:
+      type: object
+      properties:
+        title: {type: [string, 'null'], minLength: 1, maxLength: 120}
+        description: {type: [string, 'null'], maxLength: 500}
+        category: {type: [string, 'null'], maxLength: 40}
+        is_archived: {type: [boolean, 'null']}
+    HabitRead:
+      allOf:
+        - $ref: '#/components/schemas/HabitWrite'
+        - type: object
+          required: [id, is_archived, streak_count, checked_in_today]
+          properties:
+            id: {type: integer}
+            is_archived: {type: boolean}
+            streak_count: {type: integer, minimum: 0}
+            last_checkin_date: {type: [string, 'null'], format: date}
+            checked_in_today: {type: boolean}
+    CheckinRead:
+      type: object
+      required: [id, habit_id, checkin_date, checked_in_at, exp_earned, gold_earned, streak_count, current_exp, current_gold, current_level, leveled_up]
+      properties:
+        id: {type: integer}
+        habit_id: {type: integer}
+        checkin_date: {type: string, format: date}
+        checked_in_at: {type: string, format: date-time}
+        exp_earned: {type: integer, const: 40}
+        gold_earned: {type: integer, const: 8}
+        streak_count: {type: integer, minimum: 1}
+        current_exp: {type: integer, minimum: 0}
+        current_gold: {type: integer, minimum: 0}
+        current_level: {type: integer, minimum: 1}
+        leveled_up: {type: boolean}
+    Health:
+      type: object
+      required: [status]
+      properties:
+        status: {type: string}

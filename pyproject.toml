@@ -4,15 +4,29 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "habit-life-rpg"
-version = "0.2.0"
+version = "0.4.0"
 description = "Cumulative sample project for Left Blueprint, Right Magic."
 requires-python = ">=3.11"
+dependencies = [
+    "alembic>=1.14.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "sqlalchemy>=2.0.36",
+]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.3.0"]
+dev = [
+    "pytest>=8.3.0",
+    "pyyaml>=6.0.2",
+    "ruff>=0.9.0",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
-[tool.setuptools]
-py-modules = []
+[tool.setuptools.packages.find]
+include = ["backend*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
