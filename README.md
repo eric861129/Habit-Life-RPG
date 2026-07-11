@@ -7,6 +7,7 @@
 | 章節 | 分支 | 本階段成果 |
 | --- | --- | --- |
 | 第 2 章：工具箱 | `chapter/02-toolbox` | 安全環境範本、Git 規範、AI 協作規則與可驗證開發現場 |
+| 第 3 章：藍圖繪製 | `chapter/03-blueprint` | PRD、User Stories、UX Flow、UI Spec 與完整 MVP 邊界 |
 
 後續章節會在前一個分支之上累進，不會要求讀者自行合併零散程式碼。
 
