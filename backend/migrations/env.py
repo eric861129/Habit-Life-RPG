@@ -17,7 +17,7 @@ database_url = os.getenv("DATABASE_URL")
 if database_url:
     config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
 elif not config.get_main_option("sqlalchemy.url"):
-    config.set_main_option("sqlalchemy.url", get_settings().database_url)
+    config.set_main_option("sqlalchemy.url", get_settings().resolved_database_url.replace("%", "%%"))
 
 target_metadata = Base.metadata
 

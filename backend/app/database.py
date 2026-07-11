@@ -31,7 +31,7 @@ def _enable_sqlite_foreign_keys(dbapi_connection, connection_record) -> None:
 
 
 settings = get_settings()
-engine = create_database_engine(settings.database_url)
+engine = create_database_engine(settings.resolved_database_url)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 
