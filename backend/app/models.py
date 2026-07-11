@@ -11,7 +11,7 @@ from sqlalchemy import (
     Index,
     Integer,
     String,
-    Text,
+    Unicode,
     UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -32,8 +32,8 @@ class User(Base):
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    username: Mapped[str] = mapped_column(String(32), nullable=False)
-    username_normalized: Mapped[str] = mapped_column(String(32), unique=True, index=True)
+    username: Mapped[str] = mapped_column(Unicode(32), nullable=False)
+    username_normalized: Mapped[str] = mapped_column(Unicode(32), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     level: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     exp: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
@@ -64,9 +64,9 @@ class Habit(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
-    title: Mapped[str] = mapped_column(String(120), nullable=False)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    category: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    title: Mapped[str] = mapped_column(Unicode(120), nullable=False)
+    description: Mapped[str | None] = mapped_column(Unicode(500), nullable=True)
+    category: Mapped[str | None] = mapped_column(Unicode(40), nullable=True)
     is_archived: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     streak_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     last_checkin_date: Mapped[date | None] = mapped_column(Date, nullable=True)

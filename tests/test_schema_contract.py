@@ -6,7 +6,9 @@ import yaml
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine, inspect
+from sqlalchemy.dialects import mssql
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.schema import CreateTable
 from sqlalchemy.orm import Session
 
 from backend.app.database import Base
@@ -28,6 +30,17 @@ def test_checkin_foreign_keys_avoid_sql_server_multiple_cascade_paths():
     }
 
     assert foreign_keys == {"habit_id": "CASCADE", "user_id": None}
+
+
+def test_reader_text_columns_compile_to_sql_server_unicode_types():
+    users_ddl = str(CreateTable(Base.metadata.tables["users"]).compile(dialect=mssql.dialect()))
+    habits_ddl = str(CreateTable(Base.metadata.tables["habits"]).compile(dialect=mssql.dialect()))
+
+    assert "username NVARCHAR(32)" in users_ddl
+    assert "username_normalized NVARCHAR(32)" in users_ddl
+    assert "title NVARCHAR(120)" in habits_ddl
+    assert "description NVARCHAR(500)" in habits_ddl
+    assert "category NVARCHAR(40)" in habits_ddl
 
 
 def test_one_habit_can_only_have_one_checkin_per_calendar_day(tmp_path):
