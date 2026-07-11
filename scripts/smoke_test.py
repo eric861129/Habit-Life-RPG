@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import time
+from uuid import uuid4
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -67,12 +68,122 @@ def verify(urls: dict[str, str]) -> dict[str, Any]:
     return results
 
 
+def api_request(
+    method: str,
+    url: str,
+    *,
+    payload: dict[str, Any] | None = None,
+    token: str | None = None,
+) -> tuple[int, Any]:
+    headers = {
+        "Accept": "application/json",
+        "User-Agent": "HLR deployment reader-journey test",
+    }
+    data = None
+    if payload is not None:
+        headers["Content-Type"] = "application/json"
+        data = json.dumps(payload).encode("utf-8")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+
+    request = Request(url, data=data, headers=headers, method=method)
+    try:
+        with urlopen(request, timeout=120) as response:
+            body = response.read(2_000_000)
+            return response.status, parse_response_body(body)
+    except HTTPError as error:
+        body = error.read(2_000_000)
+        return error.code, parse_response_body(body)
+
+
+def parse_response_body(body: bytes) -> Any:
+    if not body:
+        return None
+    decoded = body.decode("utf-8", errors="replace")
+    try:
+        return json.loads(decoded)
+    except json.JSONDecodeError:
+        return decoded
+
+
+def verify_reader_journey(urls: dict[str, str], *, request=api_request) -> dict[str, int]:
+    validate_urls(urls)
+    api = urls["backend_url"].rstrip("/")
+    suffix = uuid4().hex[:12]
+    credentials = {
+        "username": f"smoke-{suffix}",
+        "password": f"Smoke-{uuid4().hex}!",
+    }
+    result: dict[str, int] = {}
+
+    status, register = request(
+        "POST", f"{api}/api/v1/auth/register", payload=credentials
+    )
+    if status != 201 or not isinstance(register, dict) or not register.get("access_token"):
+        raise RuntimeError(f"reader registration failed with HTTP {status}")
+    result["register"] = status
+
+    status, login = request("POST", f"{api}/api/v1/auth/login", payload=credentials)
+    if status != 200 or not isinstance(login, dict) or not login.get("access_token"):
+        raise RuntimeError(f"reader login failed with HTTP {status}")
+    token = str(login["access_token"])
+    result["login"] = status
+
+    status, habit = request(
+        "POST",
+        f"{api}/api/v1/habits",
+        payload={"title": "部署驗收", "category": "品質"},
+        token=token,
+    )
+    if status != 201 or not isinstance(habit, dict) or not isinstance(habit.get("id"), int):
+        raise RuntimeError(f"habit creation failed with HTTP {status}")
+    habit_id = habit["id"]
+    result["create_habit"] = status
+
+    checkin_url = f"{api}/api/v1/habits/{habit_id}/checkins"
+    status, checkin = request("POST", checkin_url, token=token)
+    if (
+        status != 201
+        or not isinstance(checkin, dict)
+        or checkin.get("streak_count") != 1
+        or int(checkin.get("exp_earned", 0)) <= 0
+        or int(checkin.get("gold_earned", 0)) <= 0
+    ):
+        raise RuntimeError(f"habit check-in or rewards failed with HTTP {status}")
+    result["checkin"] = status
+
+    status, _ = request("POST", checkin_url, token=token)
+    if status != 409:
+        raise RuntimeError(f"duplicate check-in returned HTTP {status}, expected 409")
+    result["duplicate_checkin"] = status
+
+    status, profile = request("GET", f"{api}/api/v1/user/profile", token=token)
+    if (
+        status != 200
+        or not isinstance(profile, dict)
+        or int(profile.get("exp", 0)) <= 0
+        or int(profile.get("gold", 0)) <= 0
+    ):
+        raise RuntimeError(f"rewarded profile verification failed with HTTP {status}")
+    result["profile"] = status
+
+    status, _ = request("DELETE", f"{api}/api/v1/habits/{habit_id}", token=token)
+    if status != 204:
+        raise RuntimeError(f"habit archive failed with HTTP {status}")
+    result["archive"] = status
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Verify the public HLR Azure deployment.")
     parser.add_argument("--urls", required=True, type=Path)
     args = parser.parse_args()
     urls = json.loads(args.urls.read_text(encoding="utf-8"))
-    print(json.dumps(verify(urls), indent=2, sort_keys=True))
+    result = {
+        "reader_journey": verify_reader_journey(urls),
+        "urls": verify(urls),
+    }
+    print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
 

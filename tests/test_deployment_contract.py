@@ -1,8 +1,10 @@
+from io import BytesIO
 from pathlib import Path
+from urllib.error import HTTPError
 
 import pytest
 
-from scripts.smoke_test import validate_urls
+from scripts.smoke_test import api_request, validate_urls, verify_reader_journey
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +27,72 @@ def test_smoke_urls_require_https_and_expected_azure_hosts():
         validate_urls(valid_urls() | {"frontend_url": "http://example.com"})
     with pytest.raises(ValueError, match="Azure hostname"):
         validate_urls(valid_urls() | {"backend_url": "https://example.com"})
+
+
+def test_reader_journey_verifies_auth_habits_rewards_and_duplicate_checkin():
+    calls: list[tuple[str, str]] = []
+    checkin_responses = [
+        (
+            201,
+            {
+                "streak_count": 1,
+                "exp_earned": 20,
+                "gold_earned": 5,
+            },
+        ),
+        (409, {"detail": "Habit already checked in today."}),
+    ]
+
+    def fake_request(method, url, *, payload=None, token=None):
+        calls.append((method, url))
+        responses = {
+            ("POST", "/api/v1/auth/register"): (201, {"access_token": "register-token"}),
+            ("POST", "/api/v1/auth/login"): (200, {"access_token": "login-token"}),
+            ("POST", "/api/v1/habits"): (201, {"id": 42, "title": "部署驗收"}),
+            ("POST", "/api/v1/habits/42/checkins"): checkin_responses,
+            ("GET", "/api/v1/user/profile"): (
+                200,
+                {"exp": 20, "gold": 5, "level": 1},
+            ),
+            ("DELETE", "/api/v1/habits/42"): (204, None),
+        }
+        path = url.removeprefix("https://hlr-api.azurewebsites.net")
+        response = responses[(method, path)]
+        if isinstance(response, list):
+            return response.pop(0)
+        return response
+
+    result = verify_reader_journey(valid_urls(), request=fake_request)
+
+    assert result == {
+        "archive": 204,
+        "checkin": 201,
+        "create_habit": 201,
+        "duplicate_checkin": 409,
+        "login": 200,
+        "profile": 200,
+        "register": 201,
+    }
+    assert len(calls) == 7
+
+
+def test_api_request_preserves_non_json_error_body(monkeypatch):
+    def fail_with_plain_text(*args, **kwargs):
+        raise HTTPError(
+            "https://hlr-api.azurewebsites.net/api/v1/auth/register",
+            500,
+            "Internal Server Error",
+            {},
+            BytesIO(b"Internal Server Error"),
+        )
+
+    monkeypatch.setattr("scripts.smoke_test.urlopen", fail_with_plain_text)
+
+    assert api_request(
+        "POST",
+        "https://hlr-api.azurewebsites.net/api/v1/auth/register",
+        payload={"username": "reader", "password": "long-enough-password"},
+    ) == (500, "Internal Server Error")
 
 
 def test_deploy_script_requires_guards_before_resource_creation():

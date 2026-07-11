@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import Base
 from backend.app.models import Habit, HabitCheckin, User
+from backend.migrations.database_url import resolve_migration_database_url
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -74,6 +75,19 @@ def test_migration_prefers_database_url_from_environment(tmp_path, monkeypatch):
     assert database_path.exists()
     tables = set(inspect(create_engine(f"sqlite:///{database_path}")).get_table_names())
     assert "habit_checkins" in tables
+
+
+def test_migration_uses_split_azure_sql_settings(monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setenv("DATABASE_HOST", "hlr-example.database.windows.net")
+    monkeypatch.setenv("DATABASE_NAME", "habit-life-rpg")
+    monkeypatch.setenv("DATABASE_USER", "hlradmin")
+    monkeypatch.setenv("DATABASE_PASSWORD", "not-a-real-secret")
+
+    url = resolve_migration_database_url("sqlite:///./habit_life_rpg.db")
+
+    assert url.startswith("mssql+pyodbc:///?odbc_connect=")
+    assert "hlr-example.database.windows.net" in url
 
 
 def test_committed_openapi_declares_every_book_mvp_endpoint():

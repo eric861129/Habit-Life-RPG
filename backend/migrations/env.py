@@ -1,23 +1,19 @@
-import os
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from backend.app.config import get_settings
 from backend.app.database import Base
 from backend.app import models  # noqa: F401
+from backend.migrations.database_url import resolve_migration_database_url
 
 
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-database_url = os.getenv("DATABASE_URL")
-if database_url:
-    config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
-elif not config.get_main_option("sqlalchemy.url"):
-    config.set_main_option("sqlalchemy.url", get_settings().resolved_database_url.replace("%", "%%"))
+database_url = resolve_migration_database_url(config.get_main_option("sqlalchemy.url"))
+config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
 
 target_metadata = Base.metadata
 
