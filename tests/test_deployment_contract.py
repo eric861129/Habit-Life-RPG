@@ -4,7 +4,7 @@ from urllib.error import HTTPError
 
 import pytest
 
-from scripts.smoke_test import api_request, fetch, validate_urls, verify_reader_journey
+from scripts.smoke_test import api_request, fetch, run_checks, validate_urls, verify_reader_journey
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -123,6 +123,19 @@ def test_fetch_does_not_retry_a_permanent_404(monkeypatch):
     assert attempts == 1
 
 
+def test_read_only_smoke_never_runs_the_mutating_reader_journey(monkeypatch):
+    monkeypatch.setattr("scripts.smoke_test.verify", lambda urls: {"frontend_url": {"status": 200}})
+
+    def unexpected_journey(urls):
+        raise AssertionError("read-only monitoring must not create reader data")
+
+    monkeypatch.setattr("scripts.smoke_test.verify_reader_journey", unexpected_journey)
+
+    assert run_checks(valid_urls(), read_only=True) == {
+        "urls": {"frontend_url": {"status": 200}}
+    }
+
+
 def test_deploy_script_requires_guards_before_resource_creation():
     text = (ROOT / "scripts" / "azure" / "deploy.sh").read_text(encoding="utf-8")
 
@@ -155,6 +168,17 @@ def test_deployment_workflows_test_before_deploying():
     assert "id-token: write" in backend
     assert "npm test -- --run" in frontend
     assert "python -m pytest -q" in backend
+
+
+def test_operations_probe_is_scheduled_and_read_only():
+    workflow = (ROOT / ".github" / "workflows" / "public-health.yml").read_text(
+        encoding="utf-8"
+    )
+
+    assert "schedule:" in workflow
+    assert "workflow_dispatch:" in workflow
+    assert "--read-only" in workflow
+    assert "docs/deployment/public-urls.json" in workflow
 
 
 def test_github_configuration_uses_environment_scoped_oidc():

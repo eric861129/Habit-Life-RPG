@@ -189,15 +189,24 @@ def verify_reader_journey(urls: dict[str, str], *, request=api_request) -> dict[
     return result
 
 
+def run_checks(urls: dict[str, str], *, read_only: bool = False) -> dict[str, Any]:
+    result: dict[str, Any] = {"urls": verify(urls)}
+    if not read_only:
+        result["reader_journey"] = verify_reader_journey(urls)
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Verify the public HLR Azure deployment.")
     parser.add_argument("--urls", required=True, type=Path)
+    parser.add_argument(
+        "--read-only",
+        action="store_true",
+        help="check public URLs without creating a reader account or application data",
+    )
     args = parser.parse_args()
     urls = json.loads(args.urls.read_text(encoding="utf-8"))
-    result = {
-        "reader_journey": verify_reader_journey(urls),
-        "urls": verify(urls),
-    }
+    result = run_checks(urls, read_only=args.read_only)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 

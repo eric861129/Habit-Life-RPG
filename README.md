@@ -13,6 +13,7 @@
 | 第 6 章：品質保證 | `chapter/06-quality` | Pytest、Ruff、OpenAPI parity 與 GitHub Actions 品質閘門 |
 | 第 7 章：前端開發 | `chapter/07-frontend` | React 響應式界面、帳號流程、Habit 管理與每日打卡 |
 | 第 8 章：Azure 雲端實戰 | `chapter/08-deployment` | Azure 免費方案、GitHub Actions、公開前後端與 Azure SQL |
+| 第 9 章：永續經營 | `chapter/09-operations` | 唯讀健康探測、Azure Monitor 規範、Runbook 與隱私政策 |
 
 後續章節會在前一個分支之上累進，不會要求讀者自行合併零散程式碼。
 

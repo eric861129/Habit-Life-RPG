@@ -1,0 +1,7 @@
+{
+  "backend_url": "https://hlr-eric861129-v2-api.azurewebsites.net",
+  "docs_url": "https://hlr-eric861129-v2-api.azurewebsites.net/docs",
+  "frontend_url": "https://victorious-dune-0ad92d11e.7.azurestaticapps.net",
+  "health_live_url": "https://hlr-eric861129-v2-api.azurewebsites.net/health/live",
+  "health_ready_url": "https://hlr-eric861129-v2-api.azurewebsites.net/health/ready"
+}
