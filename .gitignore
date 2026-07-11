@@ -27,6 +27,8 @@ coverage/
 .vite/
 playwright-report/
 test-results/
+.playwright-cli/
+output/
 
 # Local tooling and deployment artifacts
 .cache/

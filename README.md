@@ -11,6 +11,7 @@
 | 第 4 章：系統架構 | `chapter/04-architecture` | SQLAlchemy 模型、Alembic migration 與 OpenAPI 契約 |
 | 第 5 章：後端開發 | `chapter/05-backend` | FastAPI、JWT、Habit CRUD、每日打卡、Streak 與獎勵交易 |
 | 第 6 章：品質保證 | `chapter/06-quality` | Pytest、Ruff、OpenAPI parity 與 GitHub Actions 品質閘門 |
+| 第 7 章：前端開發 | `chapter/07-frontend` | React 響應式界面、帳號流程、Habit 管理與每日打卡 |
 
 後續章節會在前一個分支之上累進，不會要求讀者自行合併零散程式碼。
 
@@ -46,6 +47,26 @@ python -m uvicorn backend.app.main:app --reload --port 8000
 ```
 
 執行 seed 前必須先替換 `.env` 的 `HLR_DEMO_PASSWORD`。API 文件位於 `http://localhost:8000/docs`；應用程式不會在每次啟動時自動重建或重設示範資料。
+
+## 第 7 章完整 MVP
+
+先依上一節啟動 API，再開另一個終端啟動 React：
+
+```bash
+cd frontend
+cp .env.example .env
+npm ci
+npm run dev
+```
+
+前端預設位於 `http://localhost:5173`。本機開發時 API 主機會跟隨瀏覽器使用的 hostname；Azure 或其他環境則在建置時透過 `VITE_API_BASE_URL` 指定 HTTPS API 網址。
+
+可以另行執行前端品質閘門：
+
+```bash
+npm test -- --run
+npm run build
+```
 
 ## 版本策略
 
