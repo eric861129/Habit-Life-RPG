@@ -1,6 +1,6 @@
 # Habit Life RPG
 
-《左手藍圖，右手魔法》的累進式隨書範例專案。讀者可以切換公開章節分支，看到產品如何從安全的開發現場，逐步成長為部署在 Azure 的完整 MVP。
+《左手藍圖，右手魔法》的累進式隨書範例專案。讀者可以切換章節分支與tag，看見產品如何從文件、測試逐步成長為可執行、可審查與可交接的完整MVP。
 
 ## 目前章節
 
@@ -59,7 +59,7 @@ npm ci
 npm run dev
 ```
 
-前端預設位於 `http://localhost:5173`。本機開發時 API 主機會跟隨瀏覽器使用的 hostname；Azure 或其他環境則在建置時透過 `VITE_API_BASE_URL` 指定 HTTPS API 網址。
+前端預設位於 `http://localhost:5173`。本機開發時API主機會跟隨瀏覽器使用的hostname；其他環境則在建置時透過 `VITE_API_BASE_URL` 指定HTTPS API網址。
 
 可以另行執行前端品質閘門：
 
@@ -73,8 +73,22 @@ npm run build
 - `archive/pre-rebuild-20260711`：重建前的完整舊版。
 - `chapter/02-toolbox` 到 `chapter/10-agent-ready`：可直接執行的累進章節狀態。
 - `book-v2-chXX-*`：與章節分支對應的不可變 Tag 與 GitHub Release。
-- `main`：全書最終、已驗證且已部署的版本。
+- `book-v2-r2-auth-slice`：第二輪會員驗證垂直切片。
+- `book-v2-r2-document-change`：第二輪文件驅動優先級變更。
+- `main`：目前公開主線；第二輪修訂先保留在獨立分支與tag，確認後再決定是否整合。
+
+## 第二輪文件驅動變更
+
+`chapter/r2-capstone` 示範一次完整的需求變更：
+
+1. 編輯提出Habit優先級需求。
+2. 先更新PRD、使用者故事、驗收標準、資料庫、API、OpenAPI與UI文件。
+3. 提交會因缺少新行為而失敗的後端與前端測試。
+4. 新增migration與前後端實作。
+5. 執行完整品質閘門並以tag保留結果。
+
+詳細紀錄見 `docs/chapter-guides/r2-document-driven-priority-change.md`。
 
 ## 安全原則
 
-不要提交密碼、JWT Secret、Azure 連線字串、部署 Token、Publish Profile 或付款資訊。任何不確定能否公開的值，先留在本機 `.env`，只將變數名稱寫入 `.env.example`。
+不要提交密碼、JWT Secret、資料庫連線字串、部署Token、發布憑證或付款資訊。任何不確定能否公開的值，先留在本機 `.env`，只將變數名稱寫入 `.env.example`。

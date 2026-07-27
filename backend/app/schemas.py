@@ -2,6 +2,8 @@ from datetime import date, datetime
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, field_validator
 
+from backend.app.models import HabitPriority
+
 
 class Credentials(BaseModel):
     username: str = Field(min_length=3, max_length=32)
@@ -36,6 +38,7 @@ class HabitCreate(BaseModel):
     title: str = Field(min_length=1, max_length=120)
     description: str | None = Field(default=None, max_length=500)
     category: str | None = Field(default=None, max_length=40)
+    priority: HabitPriority = HabitPriority.MEDIUM
 
     @field_validator("title")
     @classmethod
@@ -57,6 +60,7 @@ class HabitUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=120)
     description: str | None = Field(default=None, max_length=500)
     category: str | None = Field(default=None, max_length=40)
+    priority: HabitPriority | None = None
     is_archived: bool | None = None
 
     @field_validator("title")
@@ -82,6 +86,7 @@ class HabitRead(BaseModel):
     title: str
     description: str | None
     category: str | None
+    priority: HabitPriority
     is_archived: bool
     streak_count: int
     last_checkin_date: date | None

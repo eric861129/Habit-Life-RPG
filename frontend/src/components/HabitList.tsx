@@ -2,6 +2,12 @@ import {Archive, Check, Flame, Pencil, Plus} from "lucide-react";
 
 import type {Habit} from "../types";
 
+const PRIORITY_LABELS = {
+  high: "高優先",
+  medium: "中優先",
+  low: "低優先",
+} as const;
+
 
 type HabitListProps = {
   habits: Habit[];
@@ -39,7 +45,12 @@ export function HabitList({habits, checkingId, onAdd, onArchive, onCheckIn, onEd
           {habits.map((habit) => (
             <article className="habit-row" role="listitem" key={habit.id}>
               <div className="habit-copy">
-                <h3>{habit.title}</h3>
+                <div className="habit-title-line">
+                  <h3>{habit.title}</h3>
+                  <span className={`priority-badge priority-${habit.priority}`}>
+                    {PRIORITY_LABELS[habit.priority]}
+                  </span>
+                </div>
                 <p>{habit.category ?? "未分類"}{habit.description ? ` · ${habit.description}` : ""}</p>
               </div>
               <div className="streak-cell" aria-label={`連續 ${habit.streak_count} 天`}>

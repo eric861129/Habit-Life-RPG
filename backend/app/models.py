@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timezone
+from enum import StrEnum
 
 from sqlalchemy import (
     Boolean,
@@ -21,6 +22,12 @@ from backend.app.database import Base
 
 def now_utc() -> datetime:
     return datetime.now(timezone.utc)
+
+
+class HabitPriority(StrEnum):
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
 
 
 class User(Base):
@@ -59,6 +66,10 @@ class Habit(Base):
     __tablename__ = "habits"
     __table_args__ = (
         CheckConstraint("streak_count >= 0", name="ck_habits_streak_nonnegative"),
+        CheckConstraint(
+            "priority IN ('high', 'medium', 'low')",
+            name="ck_habits_priority_allowed",
+        ),
         Index("ix_habits_user_active", "user_id", "is_archived"),
     )
 
@@ -67,6 +78,12 @@ class Habit(Base):
     title: Mapped[str] = mapped_column(String(120), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     category: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    priority: Mapped[str] = mapped_column(
+        String(10),
+        nullable=False,
+        default=HabitPriority.MEDIUM.value,
+        server_default=HabitPriority.MEDIUM.value,
+    )
     is_archived: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     streak_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     last_checkin_date: Mapped[date | None] = mapped_column(Date, nullable=True)

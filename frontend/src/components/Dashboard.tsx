@@ -14,6 +14,15 @@ import type {Habit, HabitInput, Notice, UserProfile} from "../types";
 import {HabitForm} from "./HabitForm";
 import {HabitList} from "./HabitList";
 
+const PRIORITY_RANK = {high: 0, medium: 1, low: 2} as const;
+
+function sortHabits(habits: Habit[]): Habit[] {
+  return [...habits].sort(
+    (left, right) => PRIORITY_RANK[left.priority] - PRIORITY_RANK[right.priority]
+      || left.id - right.id,
+  );
+}
+
 
 type DashboardProps = {
   token: string;
@@ -37,7 +46,7 @@ export function Dashboard({token, onLogout, onUnauthorized}: DashboardProps) {
     try {
       const [nextProfile, nextHabits] = await Promise.all([getProfile(token), listHabits(token)]);
       setProfile(nextProfile);
-      setHabits(nextHabits);
+      setHabits(sortHabits(nextHabits));
     } catch (caught) {
       if (caught instanceof ApiError && caught.status === 401) {
         onUnauthorized();
@@ -58,11 +67,13 @@ export function Dashboard({token, onLogout, onUnauthorized}: DashboardProps) {
     try {
       if (editingHabit) {
         const updated = await updateHabit(token, editingHabit.id, input);
-        setHabits((current) => current.map((habit) => habit.id === updated.id ? updated : habit));
+        setHabits((current) => sortHabits(
+          current.map((habit) => habit.id === updated.id ? updated : habit),
+        ));
         setNotice({kind: "success", title: "習慣已更新", message: updated.title});
       } else {
         const created = await createHabit(token, input);
-        setHabits((current) => [...current, created]);
+        setHabits((current) => sortHabits([...current, created]));
         setNotice({kind: "success", title: "習慣已建立", message: created.title});
       }
       setEditingHabit(undefined);

@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import select
+from sqlalchemy import case, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -30,6 +30,7 @@ def to_habit_read(habit: Habit, today) -> HabitRead:
         title=habit.title,
         description=habit.description,
         category=habit.category,
+        priority=habit.priority,
         is_archived=habit.is_archived,
         streak_count=habit.streak_count,
         last_checkin_date=habit.last_checkin_date,
@@ -54,7 +55,13 @@ def list_habits(
     query = select(Habit).where(Habit.user_id == current_user.id)
     if not include_archived:
         query = query.where(Habit.is_archived.is_(False))
-    habits = db.scalars(query.order_by(Habit.created_at, Habit.id)).all()
+    priority_order = case(
+        (Habit.priority == "high", 0),
+        (Habit.priority == "medium", 1),
+        (Habit.priority == "low", 2),
+        else_=3,
+    )
+    habits = db.scalars(query.order_by(priority_order, Habit.id)).all()
     today = checkin_service.today_in_timezone(settings)
     return [to_habit_read(habit, today) for habit in habits]
 

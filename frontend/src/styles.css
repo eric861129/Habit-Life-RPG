@@ -22,9 +22,9 @@
 * { box-sizing: border-box; }
 html { min-width: 320px; min-height: 100%; background: var(--ink); }
 body { min-width: 320px; min-height: 100vh; margin: 0; background: var(--ink); }
-button, input, textarea { font: inherit; letter-spacing: 0; }
+button, input, select, textarea { font: inherit; letter-spacing: 0; }
 button { color: inherit; }
-button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 3px; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 3px; }
 h1, h2, h3, p { margin: 0; }
 
 .auth-page, .app-page { min-height: 100vh; }
@@ -40,8 +40,8 @@ h1, h2, h3, p { margin: 0; }
 .segmented button { border: 0; border-radius: 3px; background: transparent; color: var(--muted); font-size: 14px; font-weight: 800; cursor: pointer; }
 .segmented button.is-selected { background: var(--moss-dark); color: var(--ivory); }
 .field { display: grid; gap: 8px; color: var(--ivory); font-size: 14px; font-weight: 700; }
-.field input, .field textarea, .input-shell { width: 100%; border: 1px solid var(--line); border-radius: 5px; background: var(--ink); color: var(--ivory); }
-.field input, .field textarea { min-height: 46px; padding: 11px 13px; }
+.field input, .field select, .field textarea, .input-shell { width: 100%; border: 1px solid var(--line); border-radius: 5px; background: var(--ink); color: var(--ivory); }
+.field input, .field select, .field textarea { min-height: 46px; padding: 11px 13px; }
 .field textarea { resize: vertical; line-height: 1.5; }
 .input-shell { min-height: 48px; display: flex; align-items: center; gap: 10px; padding-left: 13px; }
 .input-shell > svg { width: 19px; color: var(--blue); }
@@ -116,8 +116,13 @@ h1, h2, h3, p { margin: 0; }
 .habit-row { min-height: 94px; padding: 14px; border-bottom: 1px solid var(--line); }
 .habit-row:hover { background: rgba(255,255,255,.018); }
 .habit-copy { min-width: 0; }
+.habit-title-line { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .habit-copy h3 { color: var(--ivory); font-size: 16px; line-height: 1.35; overflow-wrap: anywhere; }
 .habit-copy p { margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+.priority-badge { padding: 2px 7px; border: 1px solid var(--line); border-radius: 999px; font-size: 11px; font-weight: 800; }
+.priority-high { border-color: #8b453d; color: #f0a096; }
+.priority-medium { border-color: #80692e; color: var(--gold-soft); }
+.priority-low { border-color: #466177; color: #9fc4df; }
 .streak-cell { display: grid; grid-template-columns: 22px auto; align-items: center; column-gap: 6px; color: var(--gold); }
 .streak-cell svg { width: 18px; }
 .streak-cell strong { font-size: 18px; }

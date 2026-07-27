@@ -1,7 +1,7 @@
 import {Save, X} from "lucide-react";
 import {useEffect, useState, type FormEvent} from "react";
 
-import type {Habit, HabitInput} from "../types";
+import type {Habit, HabitInput, HabitPriority} from "../types";
 
 
 type HabitFormProps = {
@@ -15,11 +15,13 @@ export function HabitForm({habit, isSaving, onCancel, onSave}: HabitFormProps) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState<HabitPriority>("medium");
 
   useEffect(() => {
     setTitle(habit?.title ?? "");
     setCategory(habit?.category ?? "");
     setDescription(habit?.description ?? "");
+    setPriority(habit?.priority ?? "medium");
   }, [habit]);
 
   const submit = async (event: FormEvent) => {
@@ -28,6 +30,7 @@ export function HabitForm({habit, isSaving, onCancel, onSave}: HabitFormProps) {
       title: title.trim(),
       category: category.trim() || null,
       description: description.trim() || null,
+      priority,
     });
   };
 
@@ -50,6 +53,17 @@ export function HabitForm({habit, isSaving, onCancel, onSave}: HabitFormProps) {
         <label className="field">
           <span>分類</span>
           <input value={category} onChange={(event) => setCategory(event.target.value)} maxLength={40} />
+        </label>
+        <label className="field">
+          <span>優先級</span>
+          <select
+            value={priority}
+            onChange={(event) => setPriority(event.target.value as HabitPriority)}
+          >
+            <option value="high">高</option>
+            <option value="medium">中</option>
+            <option value="low">低</option>
+          </select>
         </label>
         <label className="field field-wide">
           <span>描述</span>

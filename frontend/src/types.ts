@@ -6,11 +6,14 @@ export type UserProfile = {
   gold: number;
 };
 
+export type HabitPriority = "high" | "medium" | "low";
+
 export type Habit = {
   id: number;
   title: string;
   description: string | null;
   category: string | null;
+  priority: HabitPriority;
   is_archived: boolean;
   streak_count: number;
   last_checkin_date: string | null;
@@ -21,6 +24,7 @@ export type HabitInput = {
   title: string;
   description: string | null;
   category: string | null;
+  priority: HabitPriority;
 };
 
 export type CheckinResult = {

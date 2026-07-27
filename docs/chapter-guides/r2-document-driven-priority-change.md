@@ -30,3 +30,29 @@
 - 前端：`Unable to find a label with the text of: 優先級`，表單尚未提供選項。
 
 以上失敗都直接對應尚未實作的新需求，不是套件、路徑或環境錯誤。
+
+## Green與完整驗收
+
+實作加入：
+
+- `0002_habit_priority` migration與資料庫檢查約束。
+- 後端Create、Update、Read schema與高、中、低排序。
+- 前端型別、表單選項、清單標籤與重新排序。
+
+2026-07-27驗收結果：
+
+| 檢查 | 結果 |
+| --- | --- |
+| 後端指定優先級案例 | `2 passed` |
+| 後端完整測試 | `41 passed` |
+| Ruff | `All checks passed` |
+| OpenAPI parity | `11 operations matched` |
+| 前端元件測試 | `2 files / 9 tests passed` |
+| 前端正式build | 通過 |
+
+## 交接紀錄
+
+- 文件提交：`docs(r2): specify habit priority change`
+- 紅燈提交：`test(r2): specify habit priority change`
+- 完成tag：`book-v2-r2-document-change`
+- 已知邊界：目前優先級只有固定三段，不含拖曳、自訂權重或期限排序。
