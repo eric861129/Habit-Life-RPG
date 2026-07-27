@@ -230,20 +230,28 @@ components:
         title: {type: string, minLength: 1, maxLength: 120}
         description: {type: [string, 'null'], maxLength: 500}
         category: {type: [string, 'null'], maxLength: 40}
+        priority:
+          type: string
+          enum: [high, medium, low]
+          default: medium
     HabitUpdate:
       type: object
       properties:
         title: {type: [string, 'null'], minLength: 1, maxLength: 120}
         description: {type: [string, 'null'], maxLength: 500}
         category: {type: [string, 'null'], maxLength: 40}
+        priority:
+          type: [string, 'null']
+          enum: [high, medium, low, null]
         is_archived: {type: [boolean, 'null']}
     HabitRead:
       allOf:
         - $ref: '#/components/schemas/HabitWrite'
         - type: object
-          required: [id, is_archived, streak_count, checked_in_today]
+          required: [id, priority, is_archived, streak_count, checked_in_today]
           properties:
             id: {type: integer}
+            priority: {type: string, enum: [high, medium, low]}
             is_archived: {type: boolean}
             streak_count: {type: integer, minimum: 0}
             last_checkin_date: {type: [string, 'null'], format: date}

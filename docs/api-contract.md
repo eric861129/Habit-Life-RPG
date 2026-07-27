@@ -18,3 +18,11 @@
 | `422` | Request schema 驗證失敗 |
 
 獎勵、streak 與 level 由 `POST /api/v1/habits/{habit_id}/checkins` 的後端交易計算。
+
+## Habit優先級
+
+- `priority` 只允許 `high`、`medium`、`low`。
+- 建立時未提供 `priority`，後端預設為 `medium`。
+- 建立、讀取與修改Habit的回應都包含 `priority`。
+- `GET /api/v1/habits` 依 `high`、`medium`、`low` 排序，同一優先級依 `id` 遞增。
+- 不合法的優先級回傳 `422 Unprocessable Entity`。

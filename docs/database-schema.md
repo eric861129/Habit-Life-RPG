@@ -15,7 +15,7 @@ erDiagram
 
 ## Habits
 
-保存使用者習慣、封存狀態、目前 streak 與最後打卡日期。`ix_habits_user_active` 支援 Dashboard 常用查詢。
+保存使用者習慣、優先級、封存狀態、目前 streak 與最後打卡日期。`priority` 使用 `high`、`medium`、`low` 字串，預設為 `medium`，並以資料庫檢查約束阻止其他值。`ix_habits_user_active` 支援 Dashboard 常用查詢。
 
 ## HabitCheckins
 
@@ -29,4 +29,4 @@ Alembic 是建立與升級正式 schema 的唯一流程：
 alembic upgrade head
 ```
 
-測試可對暫存 SQLite database 執行相同 migration。Azure SQL 部署也使用相同 revision，不另外維護一份容易漂移的手寫 schema。
+測試可對暫存 SQLite database 執行相同 migration。其他資料庫環境也應沿用同一條migration歷史，不另外維護一份容易漂移的手寫schema。

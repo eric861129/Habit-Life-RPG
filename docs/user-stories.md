@@ -62,6 +62,22 @@ Given Habit 屬於目前 Member
 When Member 封存 Habit  
 Then Habit 不再出現在今日任務，歷史 Check-in 仍可保留。
 
+## HABIT-05 設定與查看優先級
+
+身為 Member，我想替 Habit 設定高、中、低優先級，以便先看見今天最重要的行動。
+
+Given Member 建立 Habit 時沒有選擇優先級  
+When 系統建立 Habit  
+Then 優先級預設為 `medium`。
+
+Given Member 擁有不同優先級的啟用 Habit  
+When Dashboard 載入今日清單  
+Then 系統依 `high`、`medium`、`low` 排序，同一優先級依建立順序排列。
+
+Given Habit 屬於目前 Member  
+When Member 編輯優先級  
+Then API 回傳新優先級，重新載入後仍保留。
+
 ## CHECKIN-01 每日成功打卡
 
 身為 Member，我想為完成的 Habit 打卡，以便取得角色成長回饋。

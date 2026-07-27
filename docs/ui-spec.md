@@ -41,12 +41,14 @@
 - Profile summary 顯示 level、累積 EXP、gold 與下一級門檻。
 - Today progress 顯示今天完成數／啟用 Habit 總數。
 - Habit list 顯示名稱、分類、streak、今日狀態與主要 Check-in 動作。
+- Habit list 顯示高、中、低優先級文字標籤，閱讀順序與API排序一致。
 - 建立 Habit 是清楚的主要命令；Edit 與 Archive 是次要工具。
 
 ### Habit Form
 
 - 名稱必填，顯示 120 字限制。
 - 描述、分類為選填。
+- 優先級使用有明確label的單選欄位，選項為高、中、低，預設為中。
 - 儲存期間欄位與按鈕停用，按鈕寬度不因文字改變。
 - Cancel 不清除已儲存資料。
 
