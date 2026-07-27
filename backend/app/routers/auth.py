@@ -10,6 +10,7 @@ from backend.app.database import get_db
 from backend.app.models import User
 from backend.app.schemas import Credentials, TokenResponse
 from backend.app.security import (
+    access_token_lifetime_seconds,
     create_access_token,
     hash_password,
     normalize_username,
@@ -18,6 +19,13 @@ from backend.app.security import (
 
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Auth"])
+
+
+def build_token_response(user: User, settings: Settings) -> TokenResponse:
+    return TokenResponse(
+        access_token=create_access_token(str(user.id), settings),
+        expires_in=access_token_lifetime_seconds(settings),
+    )
 
 
 @router.post(
@@ -47,7 +55,7 @@ def register(
         db.rollback()
         raise HTTPException(status.HTTP_409_CONFLICT, "Username is already registered.") from error
     db.refresh(user)
-    return TokenResponse(access_token=create_access_token(str(user.id), settings))
+    return build_token_response(user, settings)
 
 
 @router.post(
@@ -69,4 +77,4 @@ def login(
             detail="Invalid username or password.",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return TokenResponse(access_token=create_access_token(str(user.id), settings))
+    return build_token_response(user, settings)

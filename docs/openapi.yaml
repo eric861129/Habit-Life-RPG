@@ -206,10 +206,14 @@ components:
         password: {type: string, minLength: 10, maxLength: 128, format: password}
     TokenResponse:
       type: object
-      required: [access_token, token_type]
+      required: [access_token, token_type, expires_in]
       properties:
         access_token: {type: string}
         token_type: {type: string, const: bearer}
+        expires_in:
+          type: integer
+          minimum: 1
+          description: Access token lifetime in seconds.
     UserProfile:
       type: object
       required: [id, username, level, exp, gold]

@@ -39,6 +39,10 @@ def create_access_token(subject: str, settings: Settings) -> str:
     return jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
 
 
+def access_token_lifetime_seconds(settings: Settings) -> int:
+    return settings.access_token_minutes * 60
+
+
 def authentication_error(detail: str = "Not authenticated.") -> HTTPException:
     return HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

@@ -1,12 +1,12 @@
 import {Eye, EyeOff, LogIn, ShieldPlus, UserRound} from "lucide-react";
 import {useState, type FormEvent} from "react";
 
-import {ApiError, login, register} from "../api/client";
+import {ApiError, login, register, type TokenResponse} from "../api/client";
 
 
 type AuthScreenProps = {
   expired: boolean;
-  onAuthenticated: (token: string) => void;
+  onAuthenticated: (response: TokenResponse) => void;
 };
 
 export function AuthScreen({expired, onAuthenticated}: AuthScreenProps) {
@@ -24,7 +24,7 @@ export function AuthScreen({expired, onAuthenticated}: AuthScreenProps) {
     try {
       const response =
         mode === "register" ? await register(username, password) : await login(username, password);
-      onAuthenticated(response.access_token);
+      onAuthenticated(response);
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : "暫時無法連線，請稍後再試。");
     } finally {

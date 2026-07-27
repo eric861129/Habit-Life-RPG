@@ -7,10 +7,16 @@ from tests.conftest import register_user
 
 
 def test_register_returns_token_and_authenticated_profile(client: TestClient):
-    headers = register_user(client, "Reader")
+    registration = client.post(
+        "/api/v1/auth/register",
+        json={"username": "Reader", "password": "BookDemo!2026"},
+    )
+    headers = {"Authorization": f"Bearer {registration.json()['access_token']}"}
 
     response = client.get("/api/v1/user/profile", headers=headers)
 
+    assert registration.status_code == 201
+    assert registration.json()["expires_in"] == 3600
     assert response.status_code == 200
     assert response.json() == {"id": 1, "username": "Reader", "level": 1, "exp": 0, "gold": 0}
 
@@ -56,6 +62,18 @@ def test_login_accepts_casefolded_username_and_rejects_wrong_password(client: Te
     assert accepted.json()["token_type"] == "bearer"
     assert rejected.status_code == 401
     assert rejected.json()["detail"] == "Invalid username or password."
+
+
+def test_login_returns_token_lifetime_in_seconds(client: TestClient):
+    register_user(client, "Reader")
+
+    response = client.post(
+        "/api/v1/auth/login",
+        json={"username": "Reader", "password": "BookDemo!2026"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["expires_in"] == 3600
 
 
 def test_protected_route_rejects_missing_or_invalid_token(client: TestClient):

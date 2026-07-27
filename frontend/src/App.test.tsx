@@ -21,6 +21,7 @@ const habit = {
 beforeEach(() => {
   vi.restoreAllMocks();
   window.localStorage.clear();
+  window.sessionStorage.clear();
 });
 
 
@@ -29,7 +30,12 @@ describe("Habit Life RPG reader workflow", () => {
     const user = userEvent.setup();
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(jsonResponse({access_token: "reader-token", token_type: "bearer"}, 201))
+      .mockResolvedValueOnce(
+        jsonResponse(
+          {access_token: "reader-token", token_type: "bearer", expires_in: 3600},
+          201,
+        ),
+      )
       .mockResolvedValueOnce(jsonResponse(profile))
       .mockResolvedValueOnce(jsonResponse([]));
 
@@ -41,7 +47,10 @@ describe("Habit Life RPG reader workflow", () => {
 
     expect(await screen.findByRole("heading", {name: "今日進度"})).toBeInTheDocument();
     expect(screen.getByText("建立第一個習慣，開始累積今天的進度。")).toBeInTheDocument();
-    expect(window.localStorage.getItem("hlr.session.v1")).toBe("reader-token");
+    expect(JSON.parse(window.sessionStorage.getItem("hlr.session.v2") ?? "null")).toEqual(
+      expect.objectContaining({token: "reader-token"}),
+    );
+    expect(window.localStorage.getItem("hlr.session.v1")).toBeNull();
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
       "http://localhost:8000/api/v1/auth/register",
@@ -51,7 +60,7 @@ describe("Habit Life RPG reader workflow", () => {
 
   it("loads an existing session and checks in a ready habit", async () => {
     const user = userEvent.setup();
-    window.localStorage.setItem("hlr.session.v1", "reader-token");
+    storeSession("reader-token");
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(jsonResponse(profile))
@@ -90,7 +99,7 @@ describe("Habit Life RPG reader workflow", () => {
 
   it("creates a habit from the dashboard", async () => {
     const user = userEvent.setup();
-    window.localStorage.setItem("hlr.session.v1", "reader-token");
+    storeSession("reader-token");
     vi.spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(jsonResponse(profile))
       .mockResolvedValueOnce(jsonResponse([]))
@@ -106,8 +115,8 @@ describe("Habit Life RPG reader workflow", () => {
     expect(screen.getByText("習慣已建立")).toBeInTheDocument();
   });
 
-  it("clears an expired session and returns to login", async () => {
-    window.localStorage.setItem("hlr.session.v1", "expired-token");
+  it("clears a server-rejected session and returns to login", async () => {
+    storeSession("expired-token");
     vi.spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(jsonResponse({detail: "Not authenticated."}, 401))
       .mockResolvedValueOnce(jsonResponse({detail: "Not authenticated."}, 401));
@@ -115,8 +124,22 @@ describe("Habit Life RPG reader workflow", () => {
     render(<App />);
 
     expect(await screen.findByRole("heading", {name: "重新登入"})).toBeInTheDocument();
-    expect(window.localStorage.getItem("hlr.session.v1")).toBeNull();
+    expect(window.sessionStorage.getItem("hlr.session.v2")).toBeNull();
     await waitFor(() => expect(screen.getByRole("button", {name: "登入"})).toBeInTheDocument());
+  });
+
+  it("does not call the API when the stored session is already expired", async () => {
+    window.sessionStorage.setItem(
+      "hlr.session.v2",
+      JSON.stringify({token: "expired-token", expiresAt: Date.now() - 1}),
+    );
+    const fetchMock = vi.spyOn(globalThis, "fetch");
+
+    render(<App />);
+
+    expect(await screen.findByRole("heading", {name: "重新登入"})).toBeInTheDocument();
+    expect(window.sessionStorage.getItem("hlr.session.v2")).toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
 
@@ -126,4 +149,12 @@ function jsonResponse(body: unknown, status = 200): Response {
     status,
     headers: {"Content-Type": "application/json"},
   });
+}
+
+
+function storeSession(token: string): void {
+  window.sessionStorage.setItem(
+    "hlr.session.v2",
+    JSON.stringify({token, expiresAt: Date.now() + 3_600_000}),
+  );
 }

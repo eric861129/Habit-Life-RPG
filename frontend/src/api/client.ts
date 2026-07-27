@@ -1,7 +1,11 @@
 import type {CheckinResult, Habit, HabitInput, UserProfile} from "../types";
 
 
-type TokenResponse = {access_token: string; token_type: string};
+export type TokenResponse = {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+};
 
 export class ApiError extends Error {
   constructor(
