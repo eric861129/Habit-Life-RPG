@@ -61,3 +61,56 @@ def test_member_cannot_discover_or_modify_another_members_habit(client: TestClie
 def test_unauthenticated_habit_requests_are_rejected(client: TestClient):
     assert client.get("/api/v1/habits").status_code == 401
     assert client.post("/api/v1/habits", json={"title": "Read"}).status_code == 401
+
+
+def test_habits_default_validate_update_and_sort_priority(client: TestClient):
+    headers = register_user(client)
+
+    low = client.post(
+        "/api/v1/habits",
+        headers=headers,
+        json={"title": "整理書桌", "priority": "low"},
+    )
+    medium = client.post(
+        "/api/v1/habits",
+        headers=headers,
+        json={"title": "閱讀文件"},
+    )
+    first_high = client.post(
+        "/api/v1/habits",
+        headers=headers,
+        json={"title": "修正正式環境", "priority": "high"},
+    )
+    second_high = client.post(
+        "/api/v1/habits",
+        headers=headers,
+        json={"title": "處理資安告警", "priority": "high"},
+    )
+    invalid = client.post(
+        "/api/v1/habits",
+        headers=headers,
+        json={"title": "不合法資料", "priority": "urgent"},
+    )
+
+    assert low.status_code == 201
+    assert medium.status_code == 201
+    assert medium.json()["priority"] == "medium"
+    assert first_high.status_code == 201
+    assert second_high.status_code == 201
+    assert invalid.status_code == 422
+
+    listed = client.get("/api/v1/habits", headers=headers)
+    assert [habit["title"] for habit in listed.json()] == [
+        "修正正式環境",
+        "處理資安告警",
+        "閱讀文件",
+        "整理書桌",
+    ]
+
+    updated = client.patch(
+        f"/api/v1/habits/{low.json()['id']}",
+        headers=headers,
+        json={"priority": "high"},
+    )
+    assert updated.status_code == 200
+    assert updated.json()["priority"] == "high"

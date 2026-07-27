@@ -24,6 +24,9 @@
 | `docs/openapi.yaml` | Create、Update、Read schema |
 | `docs/ui-spec.md` | 表單選項、清單標籤與閱讀順序 |
 
-## 尚未實作
+## Red證據
 
-此節點只完成文件。下一個提交會先加入失敗測試，不先修改產品程式碼。
+- 後端：`KeyError: 'priority'`，API回應與migration都尚未提供欄位。
+- 前端：`Unable to find a label with the text of: 優先級`，表單尚未提供選項。
+
+以上失敗都直接對應尚未實作的新需求，不是套件、路徑或環境錯誤。

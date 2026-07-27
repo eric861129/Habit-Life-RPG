@@ -11,6 +11,7 @@ const habit = {
   title: "閱讀 20 分鐘",
   description: "睡前閱讀",
   category: "學習",
+  priority: "medium",
   is_archived: false,
   streak_count: 2,
   last_checkin_date: null,
@@ -113,6 +114,28 @@ describe("Habit Life RPG reader workflow", () => {
 
     expect(await screen.findByRole("heading", {name: "閱讀 20 分鐘"})).toBeInTheDocument();
     expect(screen.getByText("習慣已建立")).toBeInTheDocument();
+  });
+
+  it("creates a high-priority habit and shows its priority label", async () => {
+    const user = userEvent.setup();
+    storeSession("reader-token");
+    const highPriorityHabit = {...habit, priority: "high", title: "修正正式環境"};
+    const fetchMock = vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse(profile))
+      .mockResolvedValueOnce(jsonResponse([]))
+      .mockResolvedValueOnce(jsonResponse(highPriorityHabit, 201));
+
+    render(<App />);
+    await user.click(await screen.findByRole("button", {name: "新增習慣"}));
+    await user.type(screen.getByLabelText("習慣名稱"), "修正正式環境");
+    await user.selectOptions(screen.getByLabelText("優先級"), "high");
+    await user.click(screen.getByRole("button", {name: "儲存習慣"}));
+
+    expect(await screen.findByRole("heading", {name: "修正正式環境"})).toBeInTheDocument();
+    expect(screen.getByText("高優先")).toBeInTheDocument();
+    expect(JSON.parse(String(fetchMock.mock.calls[2][1]?.body))).toEqual(
+      expect.objectContaining({priority: "high"}),
+    );
   });
 
   it("clears a server-rejected session and returns to login", async () => {

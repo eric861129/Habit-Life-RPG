@@ -64,6 +64,21 @@ def test_initial_migration_upgrades_an_empty_sqlite_database(tmp_path):
     assert {"alembic_version", "users", "habits", "habit_checkins"} <= tables
 
 
+def test_migration_adds_priority_with_medium_default(tmp_path):
+    database_path = tmp_path / "priority-migration.db"
+    config = Config(str(ROOT / "alembic.ini"))
+    config.set_main_option("sqlalchemy.url", f"sqlite:///{database_path}")
+
+    command.upgrade(config, "head")
+
+    columns = {
+        column["name"]: column
+        for column in inspect(create_engine(f"sqlite:///{database_path}")).get_columns("habits")
+    }
+    assert columns["priority"]["nullable"] is False
+    assert "medium" in str(columns["priority"]["default"])
+
+
 def test_migration_prefers_database_url_from_environment(tmp_path, monkeypatch):
     database_path = tmp_path / "environment-target.db"
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{database_path}")
@@ -92,6 +107,9 @@ def test_committed_openapi_declares_every_book_mvp_endpoint():
     }
     assert "post" in paths["/api/v1/habits/{habit_id}/checkins"]
     assert "409" in paths["/api/v1/habits/{habit_id}/checkins"]["post"]["responses"]
+    priority = contract["components"]["schemas"]["HabitWrite"]["properties"]["priority"]
+    assert priority["enum"] == ["high", "medium", "low"]
+    assert priority["default"] == "medium"
 
 
 def test_architecture_documents_name_sqlite_and_azure_sql():
