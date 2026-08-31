@@ -13,6 +13,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 RUN apt-get update \
+    && apt-get upgrade --yes \
     && apt-get install --yes --no-install-recommends ca-certificates curl \
     && curl --fail --silent --show-error --location \
         https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb \
