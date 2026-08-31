@@ -15,7 +15,7 @@
 - 新 API 使用 `hlr-eric861129-v2-api-ca`，`minReplicas: 0`、`maxReplicas: 2`、每個 replica 0.5 vCPU／1 GiB，HTTP concurrency 10。比原先 0.25 vCPU／0.5 GiB 多保留記憶體，是依 B1 負載測試曾出現高記憶體峰值所做的保守調整。
 - Azure SQL Database 保持 Basic 5 DTU／2 GB，不做資料庫轉層、schema migration 或資料搬移。
 - Runtime 的 SQL 密碼與 JWT secret 從既有 App Settings 安全複製到 Azure Key Vault；Container App 以 user-assigned managed identity 讀取，不把值放進 Bicep、GitHub Variables、workflow、image 或 log。
-- Container image 發布到與 Public repository 關聯的 GHCR package。image 不包含機密，部署只接受 commit SHA tag 或 digest，並在部署前以 Trivy 阻擋 High／Critical vulnerability。
+- Container image 發布到與 Public repository 關聯的 GHCR package。image 不包含機密，部署只接受 commit SHA tag 或 digest。Trivy 先完整列出所有 High／Critical vulnerability，再阻擋已有修正版但尚未修補的 High／Critical vulnerability；任何 image secret finding 一律阻擋部署。
 - GitHub Actions 延續 environment-scoped OIDC，不建立 Azure client secret；部署 identity 只取得目標 Container App 的 `Container Apps Contributor`。
 - 新 API 必須先通過 `/health/live`、`/health/ready` 與完整 reader journey，之後才更新 GitHub Environment 的 `HLR_BACKEND_URL` 並重新部署同一個 Static Web Apps resource。
 - App Service B1 在切換後至少保留 48 小時作為 rollback。觀察完成前不停止、不降級、不刪除；後續停用需要另一次明確確認。

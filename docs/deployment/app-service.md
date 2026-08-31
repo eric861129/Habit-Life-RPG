@@ -13,7 +13,7 @@ Container App 固定使用 0.5 vCPU／1 GiB、`minReplicas: 0`、`maxReplicas: 2
 
 先以 `deployContainerApp=false` 建立平台資源，再執行 `scripts/azure/copy_runtime_secrets_to_key_vault.sh`。這個 script 只把既有 App Settings 中的 SQL password 與 JWT secret 直接複製到 Key Vault，不把值寫入檔案或輸出。
 
-Container image 由 GitHub Actions 建置，發布到 public GHCR package，並以 commit SHA tag／digest 與 Trivy scan 作為部署閘門。Public image 不包含 `.env`、password、JWT secret、Connection String、Azure credential 或 deployment token。
+Container image 由 GitHub Actions 建置，發布到 public GHCR package，並以 commit SHA tag／digest 與雙層 Trivy scan 作為部署閘門。第一層完整列出所有 High／Critical vulnerability；第二層阻擋已有修正版但尚未修補的 High／Critical vulnerability。獨立的 secret scan 會阻擋任何 image secret finding。Public image 不包含 `.env`、password、JWT secret、Connection String、Azure credential 或 deployment token。
 
 Container Apps 使用 `/health/live` 作為 startup／liveness probe、`/health/ready` 作為 readiness probe。`/health/live` 只確認 API process，不會因平台探測而額外查詢 SQL。
 
