@@ -31,7 +31,6 @@ RUN apt-get update \
 
 COPY --chown=10001:10001 pyproject.toml alembic.ini ./
 COPY --chown=10001:10001 backend ./backend
-COPY --chown=10001:10001 migrations ./migrations
 
 RUN python -m pip install --no-cache-dir ".[azure]"
 
