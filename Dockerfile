@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm
+FROM python:3.12.14-slim-trixie
 
 ARG GIT_SHA=unknown
 
@@ -18,7 +18,7 @@ RUN apt-get update \
         https://packages.microsoft.com/keys/microsoft.asc \
         | gpg --dearmor --output /usr/share/keyrings/microsoft-prod.gpg \
     && curl --fail --silent --show-error --location \
-        https://packages.microsoft.com/config/debian/12/prod.list \
+        https://packages.microsoft.com/config/debian/13/prod.list \
         --output /etc/apt/sources.list.d/mssql-release.list \
     && apt-get update \
     && ACCEPT_EULA=Y apt-get install --yes --no-install-recommends \
