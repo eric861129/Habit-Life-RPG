@@ -18,8 +18,8 @@ resource plan 'Microsoft.Web/serverfarms@2025-03-01' = {
   location: location
   kind: 'linux'
   sku: {
-    name: 'F1'
-    tier: 'Free'
+    name: 'B1'
+    tier: 'Basic'
     capacity: 1
   }
   properties: {
@@ -38,9 +38,10 @@ resource app 'Microsoft.Web/sites@2025-03-01' = {
     httpsOnly: true
     publicNetworkAccess: 'Enabled'
     siteConfig: {
-      alwaysOn: false
+      alwaysOn: true
       appCommandLine: 'python -m alembic upgrade head && python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000'
       ftpsState: 'Disabled'
+      healthCheckPath: '/health/live'
       http20Enabled: true
       linuxFxVersion: 'PYTHON|3.12'
       minTlsVersion: '1.2'

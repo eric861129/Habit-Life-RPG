@@ -3,8 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "prefix": {"value": "hlr-book-demo"},
-    "location": {"value": "eastasia"},
+    "location": {"value": "westus2"},
     "allowedOrigins": {"value": "https://replace-me.azurestaticapps.net"},
+    "deployContainerApp": {"value": false},
+    "containerImage": {"value": "ghcr.io/eric861129/habit-life-rpg-api:pending"},
     "sqlAdministratorLogin": {"value": "hlradmin"},
     "sqlAdministratorPassword": {"value": "<set-in-an-ignored-local-file>"},
     "jwtSecret": {"value": "<set-in-an-ignored-local-file>"}

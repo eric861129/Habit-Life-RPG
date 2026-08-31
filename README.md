@@ -12,7 +12,7 @@
 | 第 5 章：後端開發 | `chapter/05-backend` | FastAPI、JWT、Habit CRUD、每日打卡、Streak 與獎勵交易 |
 | 第 6 章：品質保證 | `chapter/06-quality` | Pytest、Ruff、OpenAPI parity 與 GitHub Actions 品質閘門 |
 | 第 7 章：前端開發 | `chapter/07-frontend` | React 響應式界面、帳號流程、Habit 管理與每日打卡 |
-| 第 8 章：Azure 雲端實戰 | `chapter/08-deployment` | Azure 免費方案、GitHub Actions、公開前後端與 Azure SQL |
+| 第 8 章：Azure 雲端實戰 | `chapter/08-deployment` | Azure 部署、GitHub Actions、公開前後端與 Azure SQL |
 | 第 9 章：永續經營 | `chapter/09-operations` | 唯讀健康探測、Azure Monitor 規範、Runbook 與隱私政策 |
 | 第 10 章：Agent-ready | `chapter/10-agent-ready` | Agent 規範、Codex Skill、Git Hook 與最終交付驗證 |
 
@@ -80,7 +80,7 @@ npm run build
 
 公開示範帳號為 `book-demo`，密碼為 `HabitLifeRPG2026!`。這是所有讀者共用的教學帳號，內容可能被其他讀者變更，請勿輸入個人或敏感資料；需要穩定資料時請自行註冊帳號。
 
-此環境使用 Static Web Apps Free、Linux App Service F1 與 Azure SQL Database free offer，適合教學展示但沒有 SLA，第一次開啟可能遇到冷啟動。公開驗收會檢查五個網址，以及註冊、登入、建立與列出習慣、打卡、防止重複打卡、獎勵與封存流程。
+此環境使用 Static Web Apps Free、Linux App Service B1 單一執行個體與 Azure SQL Database Basic 5 DTU。Azure Budget 以訂閱帳務幣別 TWD 評估，因此資源群組設定為每月 NT$960 Budget 與 NT$640 Alert Budget，分別約為 US$30 與 US$20。這仍是書籍 Demo 的最低付費組合，不代表高可用正式環境。公開驗收會檢查五個網址，以及註冊、登入、建立與列出習慣、打卡、防止重複打卡、獎勵與封存流程。
 
 ## 最終驗證
 

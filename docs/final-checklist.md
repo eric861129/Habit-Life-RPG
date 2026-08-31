@@ -24,7 +24,7 @@
 - Liveness：<https://hlr-eric861129-v2-api.azurewebsites.net/health/live>
 - Readiness：<https://hlr-eric861129-v2-api.azurewebsites.net/health/ready>
 
-Azure 實際資源必須維持 Static Web Apps `Free`、App Service `F1/Free`、SQL `freelimit + useFreeLimit=true + AutoPause`。
+Azure 實際資源必須維持 Static Web Apps `Free`、App Service `B1/Basic` capacity 1、SQL `Basic` 5 DTU／2 GB，以及資源群組每月 US$30 Budget 與 US$20 Alert Budget。不得自動提高 SKU 或增加 instance。
 
 ## 發版驗證
 

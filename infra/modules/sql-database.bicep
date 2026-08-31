@@ -34,20 +34,13 @@ resource database 'Microsoft.Sql/servers/databases@2025-01-01' = {
   name: 'habit-life-rpg'
   location: location
   sku: {
-    name: 'GP_S_Gen5'
-    tier: 'GeneralPurpose'
-    family: 'Gen5'
-    capacity: 2
+    name: 'Basic'
+    tier: 'Basic'
+    capacity: 5
   }
   properties: {
-    autoPauseDelay: 60
-    freeLimitExhaustionBehavior: 'AutoPause'
-    licenseType: 'LicenseIncluded'
-    maxSizeBytes: 34359738368
-    minCapacity: json('0.5')
-    readScale: 'Disabled'
+    maxSizeBytes: 2147483648
     requestedBackupStorageRedundancy: 'Local'
-    useFreeLimit: true
     zoneRedundant: false
   }
   tags: tags
