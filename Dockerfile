@@ -13,19 +13,18 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install --yes --no-install-recommends ca-certificates curl gnupg \
+    && apt-get install --yes --no-install-recommends ca-certificates curl \
     && curl --fail --silent --show-error --location \
-        https://packages.microsoft.com/keys/microsoft.asc \
-        | gpg --dearmor --output /usr/share/keyrings/microsoft-prod.gpg \
-    && curl --fail --silent --show-error --location \
-        https://packages.microsoft.com/config/debian/13/prod.list \
-        --output /etc/apt/sources.list.d/mssql-release.list \
+        https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb \
+        --output /tmp/packages-microsoft-prod.deb \
+    && dpkg -i /tmp/packages-microsoft-prod.deb \
+    && rm /tmp/packages-microsoft-prod.deb \
     && apt-get update \
     && ACCEPT_EULA=Y apt-get install --yes --no-install-recommends \
         libgssapi-krb5-2 \
         msodbcsql18 \
         unixodbc \
-    && apt-get purge --yes --auto-remove curl gnupg \
+    && apt-get purge --yes --auto-remove curl \
     && apt-get clean \
     && useradd --create-home --uid 10001 --shell /usr/sbin/nologin appuser
 
