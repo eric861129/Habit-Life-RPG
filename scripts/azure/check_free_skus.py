@@ -2,10 +2,26 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+
+APP_SERVICE_PRODUCT = "Azure App Service Basic Plan - Linux"
+APP_SERVICE_SKU = "B1"
+APP_SERVICE_METER = "B1"
+APP_SERVICE_UNIT = "1 Hour"
+SQL_BASIC_PRODUCT = "SQL Database Single Basic"
+SQL_BASIC_SKU = "B"
+SQL_BASIC_METER = "B DTU"
+SQL_BASIC_UNIT = "1/Day"
+BUDGET_AMOUNT_USD = 30
+MAX_FIXED_MONTHLY_COST_USD = 20
+RETAIL_PRICES_ENDPOINT = "https://prices.azure.com/api/retail/prices"
 
 
 @dataclass(frozen=True)
@@ -19,12 +35,14 @@ GUARDS = (
     ("subscription_matches", "active subscription does not match the requested subscription"),
     ("location_available", "requested Azure location is unavailable"),
     ("static_web_apps_free", "Static Web Apps Free is unavailable"),
-    ("app_service_f1_linux", "App Service Linux F1 is unavailable"),
-    ("azure_sql_free_offer", "Azure SQL free offer is unavailable"),
-    (
-        "azure_sql_free_region_compatible",
-        "requested location conflicts with existing Azure SQL free databases",
-    ),
+    ("app_service_b1_linux", "App Service Linux B1 is unavailable"),
+    ("container_apps_consumption", "Container Apps Consumption is unavailable"),
+    ("key_vault_available", "Azure Key Vault is unavailable"),
+    ("managed_identity_available", "Azure Managed Identity is unavailable"),
+    ("azure_sql_basic", "Azure SQL Basic is unavailable"),
+    ("cost_management_available", "Microsoft.Consumption is unavailable"),
+    ("monitoring_available", "Microsoft.Insights is unavailable"),
+    ("retail_prices_available", "Azure Retail Prices are unavailable"),
 )
 
 
@@ -33,15 +51,33 @@ def evaluate(result: dict[str, object]) -> PreflightDecision:
         if result.get(key) is not True:
             return PreflightDecision(False, reason)
 
-    cost = result.get("estimated_monthly_cost")
-    if isinstance(cost, bool) or not isinstance(cost, (int, float)) or cost != 0:
-        return PreflightDecision(False, "estimated monthly cost is not zero")
-    return PreflightDecision(True, "all zero-cost guards passed")
+    budget = result.get("budget_amount_usd")
+    if isinstance(budget, bool) or not isinstance(budget, (int, float)) or budget != 30:
+        return PreflightDecision(False, "resource group monthly budget must equal USD 30")
+
+    cost = result.get("estimated_monthly_cost_usd")
+    if isinstance(cost, bool) or not isinstance(cost, (int, float)):
+        return PreflightDecision(False, "estimated fixed monthly cost is missing or invalid")
+    if cost <= 0:
+        return PreflightDecision(False, "estimated fixed monthly cost must be greater than zero")
+    if cost > MAX_FIXED_MONTHLY_COST_USD:
+        return PreflightDecision(False, "estimated fixed monthly cost exceeds USD 20")
+    return PreflightDecision(True, "all paid budget guards passed")
+
+
+def resolve_azure_cli(platform_name: str = os.name) -> str:
+    """解析目前平台可執行的 Azure CLI 路徑。"""
+    candidates = ("az.cmd", "az") if platform_name == "nt" else ("az",)
+    for candidate in candidates:
+        executable = shutil.which(candidate)
+        if executable:
+            return executable
+    raise FileNotFoundError("Azure CLI executable was not found")
 
 
 def run_az(*arguments: str) -> Any:
     completed = subprocess.run(
-        ["az", *arguments, "--output", "json", "--only-show-errors"],
+        [resolve_azure_cli(), *arguments, "--output", "json", "--only-show-errors"],
         check=True,
         capture_output=True,
         text=True,
@@ -95,14 +131,68 @@ def resource_type_supports_location(
     return False
 
 
-def free_database_locations(databases: list[Any]) -> set[str]:
-    return {
-        normalized_location(str(database.get("location", "")))
-        for database in databases
-        if isinstance(database, dict)
-        and "freelimit" in str(database.get("kind", "")).lower()
-        and database.get("location")
-    }
+def sql_basic_available(editions: list[Any]) -> bool:
+    for edition in editions:
+        if not isinstance(edition, dict):
+            continue
+        values = {
+            normalized_location(str(edition.get(key, "")))
+            for key in ("name", "edition", "serviceLevelObjective", "service_level_objective")
+        }
+        if "basic" in values:
+            return True
+    return False
+
+
+def fetch_retail_items(region: str, service_name: str) -> list[dict[str, Any]]:
+    filter_value = f"armRegionName eq '{region}' and serviceName eq '{service_name}'"
+    query = urlencode({"api-version": "2023-01-01-preview", "$filter": filter_value})
+    next_page: str | None = f"{RETAIL_PRICES_ENDPOINT}?{query}"
+    items: list[dict[str, Any]] = []
+
+    while next_page:
+        request = Request(next_page, headers={"Accept": "application/json"})
+        with urlopen(request, timeout=30) as response:
+            payload = json.load(response)
+        page_items = payload.get("Items", [])
+        if not isinstance(page_items, list):
+            raise TypeError("Azure Retail Prices response has an invalid Items value")
+        items.extend(item for item in page_items if isinstance(item, dict))
+        raw_next_page = payload.get("NextPageLink")
+        next_page = raw_next_page if isinstance(raw_next_page, str) and raw_next_page else None
+    return items
+
+
+def select_retail_price(
+    items: list[dict[str, Any]],
+    *,
+    product_name: str,
+    sku_name: str,
+    meter_name: str,
+    unit_of_measure: str,
+) -> float:
+    matches = [
+        item
+        for item in items
+        if item.get("productName") == product_name
+        and item.get("skuName") == sku_name
+        and item.get("meterName") == meter_name
+        and item.get("unitOfMeasure") == unit_of_measure
+        and item.get("type") == "Consumption"
+        and isinstance(item.get("retailPrice"), (int, float))
+        and not isinstance(item.get("retailPrice"), bool)
+        and item["retailPrice"] > 0
+    ]
+    if not matches:
+        raise ValueError(f"Retail price not found for {product_name} / {sku_name} / {meter_name}")
+    latest = max(matches, key=lambda item: str(item.get("effectiveStartDate", "")))
+    return float(latest["retailPrice"])
+
+
+def estimate_monthly_cost(app_service_hourly_price: float, sql_basic_daily_price: float) -> float:
+    app_service_monthly = app_service_hourly_price * 730
+    sql_monthly = sql_basic_daily_price * 365 / 12
+    return round(app_service_monthly + sql_monthly, 2)
 
 
 def collect(subscription_id: str, location: str) -> dict[str, object]:
@@ -113,11 +203,19 @@ def collect(subscription_id: str, location: str) -> dict[str, object]:
         "location": location,
         "location_available": False,
         "static_web_apps_free": False,
-        "app_service_f1_linux": False,
-        "azure_sql_free_offer": False,
-        "azure_sql_free_region_compatible": False,
-        "existing_free_database_locations": [],
-        "estimated_monthly_cost": None,
+        "app_service_b1_linux": False,
+        "container_apps_consumption": False,
+        "key_vault_available": False,
+        "managed_identity_available": False,
+        "azure_sql_basic": False,
+        "cost_management_available": False,
+        "monitoring_available": False,
+        "retail_prices_available": False,
+        "app_service_hourly_price_usd": None,
+        "sql_basic_daily_price_usd": None,
+        "estimated_monthly_cost_usd": None,
+        "maximum_fixed_monthly_cost_usd": MAX_FIXED_MONTHLY_COST_USD,
+        "budget_amount_usd": BUDGET_AMOUNT_USD,
     }
 
     try:
@@ -131,6 +229,8 @@ def collect(subscription_id: str, location: str) -> dict[str, object]:
         return report
 
     try:
+        # Azure CLI 2.89 的 account list-locations 不接受 --subscription；
+        # 前一步 account show 已驗證目前登入訂閱與指定 ID 一致。
         locations = run_az("account", "list-locations")
         web_provider = run_az(
             "provider", "show", "--namespace", "Microsoft.Web", "--subscription", subscription_id
@@ -138,25 +238,57 @@ def collect(subscription_id: str, location: str) -> dict[str, object]:
         sql_provider = run_az(
             "provider", "show", "--namespace", "Microsoft.Sql", "--subscription", subscription_id
         )
-        f1_locations = run_az(
+        container_apps_provider = run_az(
+            "provider",
+            "show",
+            "--namespace",
+            "Microsoft.App",
+            "--subscription",
+            subscription_id,
+        )
+        key_vault_provider = run_az(
+            "provider",
+            "show",
+            "--namespace",
+            "Microsoft.KeyVault",
+            "--subscription",
+            subscription_id,
+        )
+        managed_identity_provider = run_az(
+            "provider",
+            "show",
+            "--namespace",
+            "Microsoft.ManagedIdentity",
+            "--subscription",
+            subscription_id,
+        )
+        consumption_provider = run_az(
+            "provider",
+            "show",
+            "--namespace",
+            "Microsoft.Consumption",
+            "--subscription",
+            subscription_id,
+        )
+        insights_provider = run_az(
+            "provider",
+            "show",
+            "--namespace",
+            "Microsoft.Insights",
+            "--subscription",
+            subscription_id,
+        )
+        b1_locations = run_az(
             "appservice",
             "list-locations",
             "--linux-workers-enabled",
             "--sku",
-            "F1",
+            APP_SERVICE_SKU,
             "--subscription",
             subscription_id,
         )
         sql_editions = run_az(
             "sql", "db", "list-editions", "--location", location, "--subscription", subscription_id
-        )
-        databases = run_az(
-            "resource",
-            "list",
-            "--resource-type",
-            "Microsoft.Sql/servers/databases",
-            "--subscription",
-            subscription_id,
         )
     except (subprocess.SubprocessError, json.JSONDecodeError):
         return report
@@ -169,34 +301,78 @@ def collect(subscription_id: str, location: str) -> dict[str, object]:
         and has_resource_type(web_provider, "staticSites")
         and resource_type_supports_location(web_provider, "staticSites", location)
     )
-    report["app_service_f1_linux"] = (
-        isinstance(f1_locations, list) and requested in location_names(f1_locations)
+    report["app_service_b1_linux"] = (
+        isinstance(b1_locations, list) and requested in location_names(b1_locations)
     )
-    sql_general_purpose = isinstance(sql_editions, list) and any(
-        isinstance(item, dict)
-        and "generalpurpose" in normalized_location(str(item.get("name", "")))
-        for item in sql_editions
+    report["container_apps_consumption"] = (
+        isinstance(container_apps_provider, dict)
+        and provider_registered(container_apps_provider)
+        and resource_type_supports_location(
+            container_apps_provider,
+            "managedEnvironments",
+            location,
+        )
+        and resource_type_supports_location(container_apps_provider, "containerApps", location)
     )
-    report["azure_sql_free_offer"] = (
+    report["key_vault_available"] = (
+        isinstance(key_vault_provider, dict)
+        and provider_registered(key_vault_provider)
+        and resource_type_supports_location(key_vault_provider, "vaults", location)
+    )
+    report["managed_identity_available"] = (
+        isinstance(managed_identity_provider, dict)
+        and provider_registered(managed_identity_provider)
+        and resource_type_supports_location(
+            managed_identity_provider,
+            "userAssignedIdentities",
+            location,
+        )
+    )
+    report["azure_sql_basic"] = (
         isinstance(sql_provider, dict)
         and provider_registered(sql_provider)
-        and sql_general_purpose
+        and isinstance(sql_editions, list)
+        and sql_basic_available(sql_editions)
     )
-    existing_free_locations = (
-        free_database_locations(databases) if isinstance(databases, list) else set()
+    report["cost_management_available"] = (
+        isinstance(consumption_provider, dict) and provider_registered(consumption_provider)
     )
-    report["existing_free_database_locations"] = sorted(existing_free_locations)
-    report["azure_sql_free_region_compatible"] = (
-        not existing_free_locations or requested in existing_free_locations
+    report["monitoring_available"] = (
+        isinstance(insights_provider, dict) and provider_registered(insights_provider)
     )
 
-    if all(report.get(key) is True for key, _ in GUARDS):
-        report["estimated_monthly_cost"] = 0
+    try:
+        app_service_items = fetch_retail_items(requested, "Azure App Service")
+        sql_items = fetch_retail_items(requested, "SQL Database")
+        app_service_price = select_retail_price(
+            app_service_items,
+            product_name=APP_SERVICE_PRODUCT,
+            sku_name=APP_SERVICE_SKU,
+            meter_name=APP_SERVICE_METER,
+            unit_of_measure=APP_SERVICE_UNIT,
+        )
+        sql_basic_price = select_retail_price(
+            sql_items,
+            product_name=SQL_BASIC_PRODUCT,
+            sku_name=SQL_BASIC_SKU,
+            meter_name=SQL_BASIC_METER,
+            unit_of_measure=SQL_BASIC_UNIT,
+        )
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+        return report
+
+    report["retail_prices_available"] = True
+    report["app_service_hourly_price_usd"] = app_service_price
+    report["sql_basic_daily_price_usd"] = sql_basic_price
+    report["estimated_monthly_cost_usd"] = estimate_monthly_cost(
+        app_service_price,
+        sql_basic_price,
+    )
     return report
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Verify HLR Azure zero-cost deployment guards.")
+    parser = argparse.ArgumentParser(description="Verify HLR Azure paid budget deployment guards.")
     parser.add_argument("subscription_id")
     parser.add_argument("location")
     parser.add_argument("--output", default="artifacts/azure/preflight.json")

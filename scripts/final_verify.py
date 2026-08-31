@@ -10,14 +10,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def verification_commands(*, include_live: bool) -> list[list[str]]:
+def verification_commands(*, include_live: bool, platform: str | None = None) -> list[list[str]]:
     python = sys.executable
+    npm = "npm.cmd" if (platform or sys.platform).startswith("win") else "npm"
     commands = [
         [python, "-m", "ruff", "check", "backend", "tests", "scripts"],
         [python, "-m", "pytest", "-q"],
         [python, "scripts/verify_openapi.py"],
-        ["npm", "--prefix", "frontend", "test", "--", "--run"],
-        ["npm", "--prefix", "frontend", "run", "build"],
+        [npm, "--prefix", "frontend", "test", "--", "--run"],
+        [npm, "--prefix", "frontend", "run", "build"],
     ]
     if include_live:
         commands.append(

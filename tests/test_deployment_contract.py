@@ -1,5 +1,6 @@
 from io import BytesIO
 from pathlib import Path
+import re
 from urllib.error import HTTPError
 
 import pytest
@@ -146,12 +147,24 @@ def test_deploy_script_requires_guards_before_resource_creation():
     assert "HLR_DEPLOY_CONFIRMED" in text
     assert "*.local.json" in text
     assert "BillOverUsage" not in text
+    assert "approved paid budget settings" in text
 
 
 def test_deploy_script_scopes_subscription_deployment_name_to_location():
     text = (ROOT / "scripts" / "azure" / "deploy.sh").read_text(encoding="utf-8")
 
     assert 'DEPLOYMENT_NAME="hlr-book-v2-${LOCATION}"' in text
+
+
+def test_deploy_script_requires_an_immutable_container_image_for_side_by_side_api():
+    text = (ROOT / "scripts" / "azure" / "deploy.sh").read_text(encoding="utf-8")
+
+    assert "HLR_DEPLOY_CONTAINER_APP" in text
+    assert "HLR_CONTAINER_IMAGE" in text
+    assert "deployContainerApp=true" in text
+    assert "containerImage=$HLR_CONTAINER_IMAGE" in text
+    assert "containerBackendHostname" in text
+    assert "does not change the Static Web Apps resource or hostname" in text
 
 
 def test_deployment_workflows_test_before_deploying():
@@ -168,6 +181,68 @@ def test_deployment_workflows_test_before_deploying():
     assert "id-token: write" in backend
     assert "npm test -- --run" in frontend
     assert "python -m pytest -q" in backend
+
+
+def test_backend_container_runs_as_non_root_without_baking_secrets():
+    dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    dockerignore = (ROOT / ".dockerignore").read_text(encoding="utf-8")
+
+    assert "USER 10001" in dockerfile
+    assert "EXPOSE 8000" in dockerfile
+    assert "HEALTHCHECK" in dockerfile
+    assert "backend.app.main:app" in dockerfile
+    assert "org.opencontainers.image.source" in dockerfile
+    assert "DATABASE_PASSWORD" not in dockerfile
+    assert "HLR_JWT_SECRET" not in dockerfile
+    assert "COPY . ." not in dockerfile
+    assert ".env" in dockerignore
+    assert ".git" in dockerignore
+
+
+def test_backend_workflow_builds_scans_and_deploys_an_immutable_image():
+    backend = (ROOT / ".github" / "workflows" / "deploy-backend.yml").read_text(
+        encoding="utf-8"
+    )
+
+    assert "packages: write" in backend
+    assert re.search(r"docker/build-push-action@[0-9a-f]{40} # v6", backend)
+    assert re.search(r"docker/metadata-action@[0-9a-f]{40} # v5", backend)
+    assert "type=sha,prefix=sha-" in backend
+    assert "push: true" in backend
+    assert re.search(r"aquasecurity/trivy-action@[0-9a-f]{40}", backend)
+    assert "exit-code: '1'" in backend
+    assert "az containerapp update" in backend
+    assert "AZURE_CONTAINER_APP_NAME" in backend
+    assert "deploy_to_azure" in backend
+    assert "client-secret" not in backend
+    assert "DATABASE_PASSWORD" not in backend
+    assert "HLR_JWT_SECRET" not in backend
+    assert "azurewebsites.net" not in backend
+
+
+def test_frontend_workflow_keeps_the_existing_static_web_app_contract():
+    frontend = (ROOT / ".github" / "workflows" / "deploy-frontend.yml").read_text(
+        encoding="utf-8"
+    )
+
+    assert re.search(r"Azure/static-web-apps-deploy@[0-9a-f]{40} # v1", frontend)
+    assert "VITE_API_BASE_URL: ${{ vars.HLR_BACKEND_URL }}" in frontend
+    assert "app_location: frontend" in frontend
+    assert "output_location: dist" in frontend
+
+
+def test_runtime_secret_copy_uses_key_vault_without_writing_or_printing_values():
+    script = (ROOT / "scripts" / "azure" / "copy_runtime_secrets_to_key_vault.sh").read_text(
+        encoding="utf-8"
+    )
+
+    assert "az webapp config appsettings list" in script
+    assert script.count("az keyvault secret set") == 2
+    assert script.count("--output none") >= 2
+    assert "Key Vault Secrets Officer" in script
+    assert "> artifacts/" not in script
+    assert "echo \"$DATABASE_PASSWORD\"" not in script
+    assert "echo \"$JWT_SECRET\"" not in script
 
 
 def test_operations_probe_is_scheduled_and_read_only():
@@ -188,9 +263,9 @@ def test_workflows_use_node_24_compatible_official_actions():
     assert "actions/checkout@v4" not in text
     assert "actions/setup-node@v4" not in text
     assert "actions/setup-python@v5" not in text
-    assert "actions/checkout@v6" in text
-    assert "actions/setup-node@v6" in text
-    assert "actions/setup-python@v6" in text
+    assert re.search(r"actions/checkout@[0-9a-f]{40} # v6", text)
+    assert re.search(r"actions/setup-node@[0-9a-f]{40} # v6", text)
+    assert re.search(r"actions/setup-python@[0-9a-f]{40} # v6", text)
 
 
 def test_pre_push_hook_runs_the_offline_final_verifier():
@@ -207,4 +282,10 @@ def test_github_configuration_uses_environment_scoped_oidc():
     assert "gh secret set AZURE_STATIC_WEB_APPS_API_TOKEN" in text
     assert "--sdk-auth" not in text
     assert '--role "Contributor"' not in text
-    assert "Website Contributor" in text
+    assert "Container Apps Contributor" in text
+    assert "AZURE_CONTAINER_APP_NAME" in text
+    assert "Website Contributor" not in text
+    assert "custom_branch_policies" in text
+    assert "deployment-branch-policies" in text
+    assert '"name":"main"' in text
+    assert '"type":"branch"' in text

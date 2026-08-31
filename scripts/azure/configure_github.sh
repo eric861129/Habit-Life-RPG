@@ -2,13 +2,13 @@
 set -euo pipefail
 
 if [[ $# -ne 5 ]]; then
-  echo "Usage: $0 <subscription-id> <resource-group> <webapp-name> <static-site-name> <backend-url>" >&2
+  echo "Usage: $0 <subscription-id> <resource-group> <container-app-name> <static-site-name> <backend-url>" >&2
   exit 64
 fi
 
 SUBSCRIPTION_ID="$1"
 RESOURCE_GROUP="$2"
-WEBAPP_NAME="$3"
+CONTAINER_APP_NAME="$3"
 STATIC_SITE_NAME="$4"
 BACKEND_URL="$5"
 REPOSITORY="eric861129/Habit-Life-RPG"
@@ -52,21 +52,46 @@ if [[ -z "$EXISTING_CREDENTIAL" ]]; then
     --only-show-errors
 fi
 
-WEBAPP_ID="$(az webapp show --resource-group "$RESOURCE_GROUP" --name "$WEBAPP_NAME" --query id --output tsv --only-show-errors)"
+CONTAINER_APP_ID="$(az containerapp show --resource-group "$RESOURCE_GROUP" --name "$CONTAINER_APP_NAME" --query id --output tsv --only-show-errors)"
 az role assignment create \
   --assignee-object-id "$SP_OBJECT_ID" \
   --assignee-principal-type ServicePrincipal \
-  --role "Website Contributor" \
-  --scope "$WEBAPP_ID" \
+  --role "Container Apps Contributor" \
+  --scope "$CONTAINER_APP_ID" \
   --output none \
   --only-show-errors
 
-gh api --method PUT "repos/$REPOSITORY/environments/$ENVIRONMENT" >/dev/null
+gh api --method PUT "repos/$REPOSITORY/environments/$ENVIRONMENT" --input - >/dev/null <<'JSON'
+{
+  "deployment_branch_policy": {
+    "protected_branches": false,
+    "custom_branch_policies": true
+  }
+}
+JSON
+
+BRANCH_POLICIES_ENDPOINT="repos/$REPOSITORY/environments/$ENVIRONMENT/deployment-branch-policies"
+UNEXPECTED_POLICIES="$(gh api "$BRANCH_POLICIES_ENDPOINT" \
+  --jq '.branch_policies[] | select(.name != "main") | .name')"
+if [[ -n "$UNEXPECTED_POLICIES" ]]; then
+  echo "azure-demo contains deployment policies other than main; review them manually." >&2
+  exit 68
+fi
+
+MAIN_POLICY_ID="$(gh api "$BRANCH_POLICIES_ENDPOINT" \
+  --jq '.branch_policies[] | select(.name == "main") | .id' \
+  | head -n 1)"
+if [[ -z "$MAIN_POLICY_ID" ]]; then
+  gh api --method POST "$BRANCH_POLICIES_ENDPOINT" --input - >/dev/null <<'JSON'
+{"name":"main","type":"branch"}
+JSON
+fi
+
 gh variable set AZURE_CLIENT_ID --repo "$REPOSITORY" --env "$ENVIRONMENT" --body "$CLIENT_ID"
 gh variable set AZURE_TENANT_ID --repo "$REPOSITORY" --env "$ENVIRONMENT" --body "$TENANT_ID"
 gh variable set AZURE_SUBSCRIPTION_ID --repo "$REPOSITORY" --env "$ENVIRONMENT" --body "$SUBSCRIPTION_ID"
 gh variable set AZURE_RESOURCE_GROUP --repo "$REPOSITORY" --env "$ENVIRONMENT" --body "$RESOURCE_GROUP"
-gh variable set AZURE_WEBAPP_NAME --repo "$REPOSITORY" --env "$ENVIRONMENT" --body "$WEBAPP_NAME"
+gh variable set AZURE_CONTAINER_APP_NAME --repo "$REPOSITORY" --env "$ENVIRONMENT" --body "$CONTAINER_APP_NAME"
 gh variable set HLR_BACKEND_URL --repo "$REPOSITORY" --env "$ENVIRONMENT" --body "$BACKEND_URL"
 
 STATIC_TOKEN="$(az staticwebapp secrets list --resource-group "$RESOURCE_GROUP" --name "$STATIC_SITE_NAME" --query properties.apiKey --output tsv --only-show-errors)"
