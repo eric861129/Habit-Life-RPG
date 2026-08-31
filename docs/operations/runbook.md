@@ -57,7 +57,7 @@ az webapp restart \
 
 ## 部署與回復
 
-後端 workflow 必須先通過 test、image build 與 Trivy scan，並以 SHA tag／digest 部署。前端 workflow 必須先通過 test。部署失敗時，不變更 replica 或 SQL SKU；Container App 使用 single active revision，可重新部署上一個已驗證 image digest。不得直接 force-push 章節分支或改寫既有 Tag。
+後端 workflow 必須先通過 test、image build、Trivy 完整漏洞報告、可修復 High／Critical 阻擋檢查與 image secret scan，並以 SHA tag／digest 部署。尚無修正版的 High／Critical vulnerability 會保留在完整報告中，不單獨阻擋部署；一旦上游提供修正版，阻擋檢查就會要求更新 image。前端 workflow 必須先通過 test。部署失敗時，不變更 replica 或 SQL SKU；Container App 使用 single active revision，可重新部署上一個已驗證 image digest。不得直接 force-push 章節分支或改寫既有 Tag。
 
 任何基礎設施變更前重新執行：
 
