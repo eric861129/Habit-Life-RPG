@@ -13,6 +13,7 @@ import {
 import type {Habit, HabitInput, Notice, UserProfile} from "../types";
 import {HabitForm} from "./HabitForm";
 import {HabitList} from "./HabitList";
+import {OfficialSiteLink} from "./OfficialSiteLink";
 
 
 type DashboardProps = {
@@ -136,6 +137,7 @@ export function Dashboard({token, onLogout, onUnauthorized}: DashboardProps) {
           <button className="primary-button" type="button" onClick={() => void loadDashboard()}>
             <RefreshCw aria-hidden="true" /><span>重新載入</span>
           </button>
+          <OfficialSiteLink />
         </section>
       </main>
     );
@@ -210,6 +212,7 @@ export function Dashboard({token, onLogout, onUnauthorized}: DashboardProps) {
           onCheckIn={(habit) => void handleCheckIn(habit)}
           onEdit={setEditingHabit}
         />
+        <OfficialSiteLink />
       </div>
     </main>
   );

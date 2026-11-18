@@ -2,6 +2,7 @@ import {Eye, EyeOff, LogIn, ShieldPlus, UserRound} from "lucide-react";
 import {useState, type FormEvent} from "react";
 
 import {ApiError, login, register} from "../api/client";
+import {OfficialSiteLink} from "./OfficialSiteLink";
 
 
 type AuthScreenProps = {
@@ -38,10 +39,11 @@ export function AuthScreen({expired, onAuthenticated}: AuthScreenProps) {
         <div className="auth-identity">
           <img src="/hero-avatar.png" alt="Habit Life RPG 冒險者" className="auth-avatar" />
           <div>
-            <p className="brand-name">Habit Life RPG</p>
+            <p className="brand-name">Habit Life RPG · 隨書 Demo</p>
             <h1 id="auth-title">{expired ? "重新登入" : "開啟今天的冒險日誌"}</h1>
             <p className="auth-copy">把今天完成的行動，留成看得見的成長紀錄。</p>
           </div>
+          <OfficialSiteLink />
         </div>
 
         <form className="auth-form" onSubmit={submit}>

@@ -25,6 +25,14 @@ beforeEach(() => {
 
 
 describe("Habit Life RPG reader workflow", () => {
+  it("讓讀者在登入隨書 Demo 前掃碼或點連結開啟正式版", () => {
+    render(<App />);
+
+    expect(screen.getByRole("link", {name: "前往 Habit Life RPG 正式版"}))
+      .toHaveAttribute("href", "https://habitliferpg.com/");
+    expect(screen.getByRole("img", {name: "Habit Life RPG 正式版 QR Code"})).toBeVisible();
+  });
+
   it("registers a reader and opens an empty dashboard", async () => {
     const user = userEvent.setup();
     const fetchMock = vi
@@ -40,6 +48,9 @@ describe("Habit Life RPG reader workflow", () => {
     await user.click(screen.getByRole("button", {name: "建立冒險者"}));
 
     expect(await screen.findByRole("heading", {name: "今日進度"})).toBeInTheDocument();
+    expect(screen.getByRole("link", {name: "前往 Habit Life RPG 正式版"}))
+      .toHaveAttribute("href", "https://habitliferpg.com/");
+    expect(screen.getByRole("img", {name: "Habit Life RPG 正式版 QR Code"})).toBeVisible();
     expect(screen.getByText("建立第一個習慣，開始累積今天的進度。")).toBeInTheDocument();
     expect(window.localStorage.getItem("hlr.session.v1")).toBe("reader-token");
     expect(fetchMock).toHaveBeenNthCalledWith(
